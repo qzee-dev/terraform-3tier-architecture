@@ -16,8 +16,8 @@ It includes:
 - Frontend web servers
 - Backend application servers
 - Database tier (RDS)
-
-
+  
+## Architecture
 ```mermaid
 flowchart LR
     Users((Users / Internet))
@@ -38,5 +38,33 @@ flowchart LR
     Users --> FE
     FE --> ALB
     ALB --> BE
+
+## Prerequisites
+- Terraform v1.x
+- AWS CLI configured with credentials
+- An AWS account
+## Usage
+1. Initialize Terraform:
+   terraform init
+
+2. Preview changes:
+   terraform plan
+
+3. Apply configuration:
+   terraform apply
+
+4. Destroy resources:
+   terraform destroy
+
+## Outputs
+- Load Balancer DNS
+- Database Endpoint
+
+## Best Practices
+- Use remote state (S3 + DynamoDB) for collaboration
+- Store secrets in AWS Secrets Manager
+- Apply least-privilege IAM roles
+
+
     BE --> DB
 ```
