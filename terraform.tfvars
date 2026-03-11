@@ -1,0 +1,7 @@
+cidr_block = "10.0.0.0/24"
+subnet1 = "10.0.0.0/26"
+subnet2 = "10.0.0.64/26"
+subnet3 = "10.0.0.128/26"
+subnet4 = "10.0.0.192/26"
+ami1= "ami-0c02fb55956c7d31"
+instance_type1= "t2.micro"
