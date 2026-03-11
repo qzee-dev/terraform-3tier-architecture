@@ -17,19 +17,26 @@ It includes:
 - Backend application servers
 - Database tier (RDS)
 
+
 ```mermaid
 flowchart LR
+    Users((Users / Internet))
+
     subgraph Public_Subnet
-        A[Frontend]
+        FE[Frontend]
+        ALB[Application Load Balancer]
     end
 
     subgraph Private_Subnet_Backend
-        B[Backend API]
+        BE[Backend API]
     end
 
     subgraph Private_Subnet_Database
-        C[(Database)]
+        DB[(Database)]
     end
 
-    A --> B --> C
+    Users --> FE
+    FE --> ALB
+    ALB --> BE
+    BE --> DB
 ```
