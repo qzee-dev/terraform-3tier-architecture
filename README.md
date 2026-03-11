@@ -38,6 +38,8 @@ flowchart LR
     Users --> FE
     FE --> ALB
     ALB --> BE
+    BE --> DB
+```
 
 ## Prerequisites
 - Terraform v1.x
