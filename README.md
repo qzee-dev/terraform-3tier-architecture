@@ -71,3 +71,23 @@ flowchart LR
 
     BE --> DB
 ```
+## Networking Connection
+Internet
+   │
+Internet Gateway
+   │
+Public Route Table
+   │
+ ┌───────────────┬───────────────┐
+ │               │
+Subnet1          Subnet2
+(Public)         (Public)
+│
+NAT Gateway
+│
+Private Route Table
+│
+ ┌───────────────┬───────────────┐
+ │               │
+Subnet3          Subnet4
+(Private)        (Private)
