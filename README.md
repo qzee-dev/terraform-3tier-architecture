@@ -61,6 +61,7 @@ flowchart LR
 ## Outputs
 - Load Balancer DNS
 - Database Endpoint
+- EC2 Public ip
 
 ## Best Practices
 - Use remote state (S3 + DynamoDB) for collaboration
