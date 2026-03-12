@@ -1,6 +1,8 @@
 name: Terraform Security and Lint
 
-on: [workflow_dispatch]
+on:
+branches: [ main ]
+workflow_dispatch:
 
 jobs:
 terraform-checks:
