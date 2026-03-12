@@ -1,6 +1,6 @@
 name: Terraform Security and Lint
 
-on: [pull_request, push, workflow_dispatch]
+on: [workflow_dispatch]
 
 jobs:
 terraform-checks:
