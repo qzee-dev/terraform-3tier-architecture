@@ -1,5 +1,17 @@
 name: Terraform Deployment
-on: [workflow_dispatch]
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select environment(dev/staging/prod)"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
 
 permissions:
   id-token: write
@@ -8,8 +20,13 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
+    # Link to GitHub Environment
+    environment: ${{ github.event.inputs.environment }}
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Fetch Keys from Vault
         uses: hashicorp/vault-action@v3
         with:
@@ -21,6 +38,23 @@ jobs:
             aws/creds/terraform-role secret_key | AWS_SECRET_ACCESS_KEY
 
       - uses: hashicorp/setup-terraform@v3
-      - run: terraform init
-      - run: terraform plan
-      - run: terraform apply -auto-approve
+
+      # Initialize with environment-specific state
+      - name: Terraform Init
+        run: |
+          terraform init \
+            -backend-config="key=${{ github.event.inputs.environment }}/terraform.tfstate"
+
+      # Select or create workspace
+      - name: Select Workspace
+        run: |
+          terraform workspace select ${{ github.event.inputs.environment }} \
+          || terraform workspace new ${{ github.event.inputs.environment }}
+
+      # Plan with environment variable
+      - name: Terraform Plan
+        run: terraform plan -var="environment=${{ github.event.inputs.environment }}"
+
+      # Apply changes
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -var="environment=${{ github.event.inputs.environment }}"
