@@ -47,7 +47,7 @@ resource "aws_lb" "app_alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = [
+  subnets = [
     aws_subnet.subnet1.id,
     aws_subnet.subnet2.id
   ]
@@ -55,7 +55,7 @@ resource "aws_lb" "app_alb" {
   enable_deletion_protection = true
   drop_invalid_header_fields = true
 
- access_logs {
+  access_logs {
     bucket  = aws_s3_bucket.alb_logs.id
     prefix  = "alb-logs"
     enabled = true
@@ -81,7 +81,7 @@ resource "aws_lb_target_group" "app_tg" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
   }
-}  
+}
 
 # HTTP Listener (80) → Redirect to HTTPS
 resource "aws_lb_listener" "http_redirect" {
@@ -123,7 +123,7 @@ resource "aws_lb_listener" "https_listener" {
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = aws_acm_certificate.example.arn   # Your ACM cert
+  certificate_arn   = aws_acm_certificate.example.arn # Your ACM cert
 
   default_action {
     type             = "forward"

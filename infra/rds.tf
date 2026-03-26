@@ -39,8 +39,8 @@ resource "aws_db_instance" "mysql" {
 
   auto_minor_version_upgrade = true
 
-  deletion_protection = true
-  monitoring_interval = 30
-  monitoring_role_arn = aws_iam_role.rds_monitoring_role.arn
+  deletion_protection                 = true
+  monitoring_interval                 = 30
+  monitoring_role_arn                 = aws_iam_role.rds_monitoring_role.arn
   iam_database_authentication_enabled = true
 }

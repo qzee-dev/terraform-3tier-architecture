@@ -8,13 +8,13 @@ resource "aws_instance" "webserver1" {
 
   associate_public_ip_address = false
 
-  monitoring                 = true
+  monitoring    = true
   ebs_optimized = true
 
 
-   metadata_options {
-    http_tokens = "required"      # Enforces IMDSv2
-    http_endpoint = "enabled"
+  metadata_options {
+    http_tokens                 = "required" # Enforces IMDSv2
+    http_endpoint               = "enabled"
     http_put_response_hop_limit = 1
   }
 
@@ -22,13 +22,13 @@ resource "aws_instance" "webserver1" {
   root_block_device {
     volume_type = "gp3"
     volume_size = 20
-    encrypted   = true   # <-- Encryption enabled
+    encrypted   = true # <-- Encryption enabled
   }
 
   tags = {
     Name = "web-EC2"
-  
-}
+
+  }
 }
 
 ############################################
@@ -150,22 +150,22 @@ resource "aws_security_group" "sg1" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_http"{
+resource "aws_vpc_security_group_ingress_rule" "allow_http" {
   security_group_id = aws_security_group.sg1.id
   cidr_ipv4         = "10.0.0.0/24"
   from_port         = 80
   ip_protocol       = "tcp"
   to_port           = 80
-  description       = "Allow HTTP traffic from the internet"  # Added
+  description       = "Allow HTTP traffic from the internet" # Added
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow_tls"{
+resource "aws_vpc_security_group_ingress_rule" "allow_tls" {
   security_group_id = aws_security_group.sg1.id
   cidr_ipv4         = "10.0.0.0/24"
   from_port         = 443
   ip_protocol       = "tcp"
   to_port           = 443
-  description = "Allow HTTPS traffic from the internet"
+  description       = "Allow HTTPS traffic from the internet"
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
@@ -174,7 +174,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
   from_port         = 22
   ip_protocol       = "tcp"
   to_port           = 22
-  description = "Allow SSH traffic from this network "
+  description       = "Allow SSH traffic from this network "
 }
 
 
@@ -183,6 +183,6 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
   security_group_id = aws_security_group.sg1.id
   cidr_ipv4         = "10.0.0.0/24"
   ip_protocol       = "-1" # semantically equivalent to all ports
-  description = "Allow outbound traffic from this block"
+  description       = "Allow outbound traffic from this block"
 }
 
