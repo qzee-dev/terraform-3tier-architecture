@@ -7,7 +7,7 @@ resource "aws_subnet" "subnet1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.subnet1
   availability_zone       = "us-east-1a"
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
   tags = {
     Name = "subnet-1"
   }
@@ -18,7 +18,7 @@ resource "aws_subnet" "subnet2" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.subnet2
   availability_zone = "us-east-1b"
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
   tags = {
     Name = "subnet-2"
   }

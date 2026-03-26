@@ -30,7 +30,10 @@ variable "instance_type1" {
     default = "value for instance_type"
 }
   
-
+variable "db_password" {
+  type      = string
+  sensitive = true
+}
 
 
   
