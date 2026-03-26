@@ -1,0 +1,51 @@
+name: Terraform Security Scan (Checkov)
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  checkov:
+    name: Run Checkov (Terraform Security)
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Setup Terraform (validation only)
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # 3. Terraform format check
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive
+
+      # 4. Terraform validation (no backend)
+      - name: Validate Terraform
+        run: |
+          terraform init -backend=false
+          terraform validate
+
+      # 5. Run Checkov scan
+      - name: Run Checkov scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform
+          output_format: sarif
+          output_file_path: checkov.sarif
+          quiet: true
+          soft_fail: false
+
+      # 6. Upload results to GitHub Security tab
+      - name: Upload SARIF report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: checkov.sarif
