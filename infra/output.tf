@@ -11,3 +11,6 @@ output "vpc_id" {
 output "asg_private_ips" {
   value = [for i in data.aws_instance.asg_instance_ips : i.private_ip]
 }
+output "rds_endpoint" {
+  value = aws_db_instance.mysql.endpoint
+}
