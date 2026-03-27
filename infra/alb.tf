@@ -114,9 +114,4 @@ resource "aws_lb_listener" "https_listener" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "ec2_attach" {
-  target_group_arn = aws_lb_target_group.app_tg.arn
-  target_id        = aws_instance.webserver1.id
-  port             = 80
-}
 
