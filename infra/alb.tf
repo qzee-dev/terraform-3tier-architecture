@@ -100,23 +100,6 @@ resource "aws_lb_listener" "http_redirect" {
   }
 }
 
-# HTTP Listener (80) → Redirect to HTTPS
-resource "aws_lb_listener" "http_redirect" {
-  load_balancer_arn = aws_lb.app_alb.arn
-  port              = 80
-  protocol          = "HTTP"
-
-  default_action {
-    type = "redirect"
-
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
-}
-
 # HTTPS Listener (443) → Forward to target group
 resource "aws_lb_listener" "https_listener" {
   load_balancer_arn = aws_lb.app_alb.arn
