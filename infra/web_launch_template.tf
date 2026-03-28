@@ -10,7 +10,7 @@ resource "aws_launch_template" "web_lt" {
 # IAM permissions for instance
 
   iam_instance_profile {
-    name = aws_iam_instance_profile.ec2_instance_profile.name
+    name = aws_iam_instance_profile.ec2_rds_secrets_profile.name
   }
 
  # Network interface security
