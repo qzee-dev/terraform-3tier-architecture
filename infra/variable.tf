@@ -1,32 +1,31 @@
-variable "cidr_block" {
+variable "vpc_cidr_block" {
   default = "this is the value for block ip"
 }
 
-variable "subnet1" {
+variable "public_subnet_1a_cidr" {
   default = "this is subnet1 value"
 
 }
 
-variable "subnet2" {
+variable "public_subnet_1b_cidr" {
   default = "value  for subnet2"
 
 }
-variable "subnet3" {
+variable "private_subnet_1a_cidr" {
   default = "value of subnet3"
 
 }
 
-variable "subnet4" {
+variable "private_subnet_1b_cidr" {
   default = "value for subnet4"
 
 }
 
-variable "ami1" {
-
+variable "ec2_instance_ami_id" {
   default = "value for ec2 ami"
-
 }
-variable "instance_type1" {
+
+variable "ec2_instance_type" {
   default = "value for instance_type"
 }
 
