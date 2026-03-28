@@ -25,8 +25,8 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
   description = "Subnet group for RDS instance"
 
   subnet_ids = [
-    aws_subnet.private3.id,
-    aws_subnet.private4.id
+    aws_subnet.private_subnet_1a_cidr.id,
+    aws_subnet.private_subnet_1b_cidr.id
   ]
 
   tags = {
