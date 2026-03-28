@@ -11,7 +11,7 @@ resource "aws_launch_template" "web_lt" {
     name = aws_iam_instance_profile.ec2_instance_profile.name
   }
 
-  vpc_security_group_ids = [aws_security_group.alb_sg.id]
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
 
   associate_public_ip_address = false
   monitoring                  = true
