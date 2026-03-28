@@ -1,15 +1,21 @@
+############################################
+# Launch Template for ASG + Docker + Nginx
+############################################
 resource "aws_launch_template" "web_lt" {
   name_prefix   = "webserver-"
-  image_id      = var.ami1
+  image_id      = var.ec2_ami_id       # Use your AMI with OS of choice
   instance_type = var.instance_type1
   key_name      = "my-keypair-name"
 
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ec2_instance_profile.name
+  }
+
   vpc_security_group_ids = [aws_security_group.alb_sg.id]
 
-  monitoring = true
-  ebs_optimized = true
-
   associate_public_ip_address = false
+  monitoring                  = true
+  ebs_optimized               = true
 
   metadata_options {
     http_tokens                 = "required"
@@ -26,6 +32,14 @@ resource "aws_launch_template" "web_lt" {
       encrypted   = true
     }
   }
+
+  # User data for Docker + Nginx + Docker Compose setup
+  user_data = base64encode(templatefile("${path.module}/user-data.sh", {
+    secret_name   = var.secret_name
+    region        = var.aws_region
+    webapp_image  = var.webapp_docker_image
+    api_image     = var.api_docker_image
+  }))
 
   tag_specifications {
     resource_type = "instance"
