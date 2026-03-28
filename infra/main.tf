@@ -1,47 +1,47 @@
 resource "aws_vpc" "main" {
-  cidr_block = var.cidr_block
+  cidr_block = var.vpc_cidr_block
 }
 
 # Subnet 1
-resource "aws_subnet" "subnet1" {
+resource "aws_subnet" "public_subnet_1a_cidr" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.subnet1
+  cidr_block              = var.public_subnet_1a_cidr
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = false
   tags = {
-    Name = "subnet-1"
+    Name = "public_subnet_1a"
   }
 }
 
 # Subnet 2
-resource "aws_subnet" "subnet2" {
+resource "aws_subnet" "public_subnet_1b_cidr" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.subnet2
+  cidr_block              = var.public_subnet_1b_cidr
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = false
   tags = {
-    Name = "subnet-2"
+    Name = "public_subnet_1b"
   }
 }
 
 
 # Subnet 3
-resource "aws_subnet" "subnet3" {
+resource "aws_subnet" "private_subnet_1a_cidr" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.subnet3
+  cidr_block        = var.private_subnet_1a_cidr
   availability_zone = "us-east-1a"
   tags = {
-    Name = "subnet-3"
+    Name = "private_subnet_1a"
   }
 }
 
 # Subnet 4
-resource "aws_subnet" "subnet4" {
+resource "aws_subnet" "private_subnet_1b_cidr" {
   vpc_id            = aws_vpc.main.id
-  cidr_block        = var.subnet4
+  cidr_block        = var.private_subnet_1b_cidr
   availability_zone = "us-east-1b"
   tags = {
-    Name = "subnet-2"
+    Name = "private_subnet_1b"
   }
 }
 
@@ -68,13 +68,13 @@ resource "aws_route_table" "public" {
   }
 }
 
-resource "aws_route_table_association" "subnet1" {
-  subnet_id      = aws_subnet.subnet1.id
+resource "aws_route_table_association" "public_subnet_1a_cidr" {
+  subnet_id      = aws_subnet.public_subnet_1a_cidr.id
   route_table_id = aws_route_table.public.id
 
 }
-resource "aws_route_table_association" "subnet2" {
-  subnet_id      = aws_subnet.subnet2.id
+resource "aws_route_table_association" "public_subnet_1b_cidr" {
+  subnet_id      = aws_subnet.public_subnet_1a_cidr.id
   route_table_id = aws_route_table.public.id
 
 }
