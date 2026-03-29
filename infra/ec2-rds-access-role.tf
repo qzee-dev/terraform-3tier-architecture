@@ -62,6 +62,36 @@ resource "aws_iam_policy" "ec2_rds_secrets_policy" {
     ]
   })
 }
+# ============================================
+# IAM POLICY FOR SSM ACCESS
+# ===========================================
+# Add this inline policy to your existing IAM role
+resource "aws_iam_role_policy" "ssm_access" {
+  name   = "ec2-ssm-access"
+  role   = aws_iam_role.ec2_rds_secrets_role.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ssmmessages:CreateControlChannel",
+          "ssmmessages:CreateDataChannel",
+          "ssmmessages:OpenControlChannel",
+          "ssmmessages:OpenDataChannel",
+          "ec2messages:GetMessages"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Also attach the AWS managed policy
+resource "aws_iam_role_policy_attachment" "ssm_managed" {
+  role       = aws_iam_role.ec2_rds_secrets_role.id
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
 
 # ============================================
 # ATTACH POLICY TO ROLE
