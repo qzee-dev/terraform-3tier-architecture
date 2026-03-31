@@ -1,3 +1,4 @@
+/*
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
 
@@ -31,3 +32,6 @@ resource "aws_route_table_association" "private_subnet4" {
   subnet_id      = aws_subnet.subnet4.id
   route_table_id = aws_route_table.private.id
 }
+
+*/
+``
