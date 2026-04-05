@@ -23,8 +23,7 @@ Think of it as the backbone for any modern web application—handling traffic at
 - Apply least-privilege IAM role
 
 # Terraform 3-Tier Architecture summary  🚀
-
-Here’s a **single, blended, copy‑paste ready `README.md`** that incorporates everything: baked AMI strategy, GitHub Flow, CI/CD pipelines, rollout strategies, and security practices. It’s structured, organized, and GitHub‑standard.
+Here’s the **final, blended `README.md`** with a **Mermaid diagram** showing the CI/CD + rollout flow. This version is copy‑paste ready and GitHub‑standard:
 
 ```markdown
 # Terraform 3-Tier Architecture 🚀
@@ -122,9 +121,8 @@ terraform-3tier-architecture/
   - **Manual dispatch only** → Infrastructure deployment workflow (`infra-create.yaml`) must be triggered manually.  
   - Supports environments: `dev`, `staging`, `prod`.  
 
-This separation ensures **continuous integration for security**, but **controlled, manual deployment** for infrastructure.
-
 ---
+
 ## 🔄 Rollout Strategies (Baked AMI Deployment)
 
 This project uses **baked AMIs** for application deployment. The rollout strategy ensures **safe, continuous delivery** without downtime:
@@ -137,12 +135,10 @@ This project uses **baked AMIs** for application deployment. The rollout strateg
 ### Health Thresholds
 - **Minimum target = 3 instances**  
   → At least **75% health** must be achieved before terminating any old EC2.  
-  → Example: If 3 instances are required, 2 must be healthy before termination begins.  
 
 - **Minimum target = 2 instances**  
   → A temporary **third Auto Scaling Group** is created to add capacity.  
   → At least **50% health** must be achieved before terminating old EC2.  
-  → Example: If 2 instances are required, 1 must be healthy before termination begins.  
 
 ### Deployment Flow
 1. Launch new EC2 instances with baked AMI.  
@@ -150,10 +146,28 @@ This project uses **baked AMIs** for application deployment. The rollout strateg
 3. Only then terminate old EC2 instances.  
 4. Maintain minimum health thresholds throughout rollout.  
 
-This ensures:
-- **No unhealthy deployments** (new EC2 must be healthy before cutover).  
-- **No premature termination** (old EC2 remain until thresholds are met).  
-- **Continuous availability** (traffic always routed to healthy targets).  
+---
+
+## 📊 CI/CD + Rollout Flow (Diagram)
+
+```mermaid
+flowchart TD
+    A[Developer creates branch] --> B[Pull Request]
+    B --> C[Gitleaks Scan]
+    B --> D[Checkov Scan]
+    C --> E{Secrets Found?}
+    D --> F{Security Issues?}
+    E -->|Yes| G[Fail PR]
+    F -->|Yes| G[Fail PR]
+    E -->|No| H[Merge to Main]
+    F -->|No| H[Merge to Main]
+    H --> I[Manual Dispatch Deployment]
+    I --> J[Launch New EC2 (Baked AMI)]
+    J --> K[Health Check via ALB]
+    K -->|>=75% Healthy| L[Terminate Old EC2]
+    K -->|<75% Healthy| M[Wait / Retry]
+    L --> N[Deployment Complete]
+```
 
 ---
 
@@ -178,12 +192,24 @@ aws logs tail /aws/vpc/flowlogs --follow
 
 ---
 
+## 🤝 Contributing
+
+1. Fork the repository  
+2. Create a feature branch  
+3. Commit changes  
+4. Push branch  
+5. Open a Pull Request  
+
 Pull Request Checklist:
 - `terraform fmt -recursive`  
 - `terraform validate`  
 - Checkov scan passes  
 - Gitleaks scan passes  
 - Documentation updated  
+
+---
+
+---
 
 ---
 
@@ -203,10 +229,10 @@ Pull Request Checklist:
 - **Deployment** is **manual dispatch only**, ensuring controlled release.  
 - **Rollout strategy** ensures safe cutover with health thresholds and no downtime.  
 
+**Happy Infrastructure Coding! 🚀**
 
-This version blends everything into a **single, well‑organized README**:  
-- Starts with baked AMI + GitHub Flow philosophy.  
-- Explains CI/CD automation vs. manual deployment.  
-- Details rollout strategies with health thresholds.  
-- Keeps the structure consistent with GitHub standards.  
+_Last Updated: April 5, 2026_
+```
+
+---
 
