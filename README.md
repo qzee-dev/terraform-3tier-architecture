@@ -12,99 +12,10 @@ This project provisions a secure, scalable 3-tier AWS infrastructure with:
 - **Database Tier**: RDS PostgreSQL/MySQL (isolated in private subnet)
 
 Think of it as the backbone for any modern web application—handling traffic at the edge, processing business logic, and persisting data securely.
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
-  <style>
-    .box { fill: #f4f4f4; stroke: #333; stroke-width: 2; rx: 10; ry: 10; }
-    .decision { fill: #fff3cd; stroke: #333; stroke-width: 2; }
-    .arrow { stroke: #333; stroke-width: 2; marker-end: url(#arrowhead); }
-    text { font-family: Arial, sans-serif; font-size: 14px; text-anchor: middle; }
-  </style>
-
-  <defs>
-    <marker id="arrowhead" markerWidth="10" markerHeight="7" 
-            refX="10" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" />
-    </marker>
-  </defs>
-
-  <!-- Nodes -->
-  <rect class="box" x="450" y="20" width="300" height="40"/>
-  <text x="600" y="45">👨‍💻 SRE/DevOps creates branch</text>
-
-  <rect class="box" x="450" y="80" width="300" height="40"/>
-  <text x="600" y="105">🔀 Pull Request</text>
-
-  <rect class="box" x="200" y="150" width="250" height="40"/>
-  <text x="325" y="175">🕵️‍♂️ Gitleaks Scan</text>
-
-  <rect class="box" x="750" y="150" width="250" height="40"/>
-  <text x="875" y="175">🛡️ Checkov Scan</text>
-
-  <polygon class="decision" points="325,230 375,270 325,310 275,270"/>
-  <text x="325" y="275">Secrets?</text>
-
-  <polygon class="decision" points="875,230 925,270 875,310 825,270"/>
-  <text x="875" y="275">Issues?</text>
-
-  <rect class="box" x="250" y="330" width="150" height="40"/>
-  <text x="325" y="355">❌ Fail PR</text>
-
-  <rect class="box" x="800" y="330" width="150" height="40"/>
-  <text x="875" y="355">❌ Fail PR</text>
-
-  <rect class="box" x="500" y="330" width="200" height="40"/>
-  <text x="600" y="355">✅ Merge to Main</text>
-
-  <rect class="box" x="450" y="400" width="300" height="40"/>
-  <text x="600" y="425">🚀 Manual Deployment</text>
-
-  <rect class="box" x="450" y="460" width="300" height="40"/>
-  <text x="600" y="485">💻 Launch EC2 (AMI)</text>
-
-  <rect class="box" x="450" y="520" width="300" height="40"/>
-  <text x="600" y="545">🔍 ALB Health Check</text>
-
-  <polygon class="decision" points="600,600 650,640 600,680 550,640"/>
-  <text x="600" y="645">≥75%?</text>
-
-  <rect class="box" x="350" y="700" width="200" height="40"/>
-  <text x="450" y="725">🗑️ Terminate Old EC2</text>
-
-  <rect class="box" x="650" y="700" width="200" height="40"/>
-  <text x="750" y="725">⏱️ Retry</text>
-
-  <rect class="box" x="450" y="780" width="300" height="40"/>
-  <text x="600" y="805">🎉 Deployment Complete</text>
-
-  <!-- Arrows -->
-  <line class="arrow" x1="600" y1="60" x2="600" y2="80"/>
-  <line class="arrow" x1="600" y1="120" x2="325" y2="150"/>
-  <line class="arrow" x1="600" y1="120" x2="875" y2="150"/>
-
-  <line class="arrow" x1="325" y1="190" x2="325" y2="230"/>
-  <line class="arrow" x1="875" y1="190" x2="875" y2="230"/>
-
-  <line class="arrow" x1="325" y1="310" x2="325" y2="330"/>
-  <line class="arrow" x1="875" y1="310" x2="875" y2="330"/>
-
-  <line class="arrow" x1="375" y1="270" x2="500" y2="350"/>
-  <line class="arrow" x1="825" y1="270" x2="700" y2="350"/>
-
-  <line class="arrow" x1="600" y1="370" x2="600" y2="400"/>
-  <line class="arrow" x1="600" y1="440" x2="600" y2="460"/>
-  <line class="arrow" x1="600" y1="500" x2="600" y2="520"/>
-  <line class="arrow" x1="600" y1="560" x2="600" y2="600"/>
-
-  <line class="arrow" x1="580" y1="680" x2="450" y2="700"/>
-  <line class="arrow" x1="620" y1="680" x2="750" y2="700"/>
-
-  <line class="arrow" x1="450" y1="740" x2="600" y2="780"/>
-  <line class="arrow" x1="750" y1="740" x2="600" y2="780"/>
-
-</svg>
 
 ```
-
+img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/fd37697c-7f58-47a4-99cd-11e59d343b32" />
+```
 ## Best Practices
 - Use remote state (S3 + DynamoDB) for collaboration
 - Store secrets in AWS Secrets Manager
@@ -237,7 +148,7 @@ This project uses **baked AMIs** for application deployment. The rollout strateg
 ---
 
 ## 📊 CI/CD + Rollout Flow (Diagram)
-https://chatgpt.com/s/m_69d278893f448191a15c8f0dfbad98c6
+
 ---
 
 ## 📊 Monitoring & Logging
