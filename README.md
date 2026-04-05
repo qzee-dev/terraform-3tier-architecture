@@ -24,10 +24,11 @@ flowchart LR
     subgraph Public["🌐 Public Tier"]
         ALB[Application Load Balancer]     
     end
-     subgraph Private_App["🔒 Nginx/proxy Private App Tier"]
-       FE[Frontend Web Servers]
+     subgraph Private_App["🔒Private App Tier <br/>Nginx/ Forward proxy "]
+       FE[Frontend Web Servers<br/>Auto-Scaling Group]
+    end 
     subgraph Private_App["🔒 Private App Tier"]
-        BE[Backend API Servers<br/>Auto-Scaling Group]
+        BE[Backend API Servers]
     end
     
     subgraph Private_DB["🔐 Private Database Tier"]
