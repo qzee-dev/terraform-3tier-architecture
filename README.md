@@ -13,8 +13,38 @@ This project provisions a secure, scalable 3-tier AWS infrastructure with:
 
 Think of it as the backbone for any modern web application—handling traffic at the edge, processing business logic, and persisting data securely.
 
----
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/fd37697c-7f58-47a4-99cd-11e59d343b32" />
+--- Mermaid
+flowchart TD
+    %% Developer Workflow
+    A[👨‍💻 Sre/DevOps creates branch] --> B[🔀 Pull Request]
+
+    %% Security Scans
+    B --> C[🕵️‍♂️ Gitleaks Scan]
+    B --> D[🛡️ Checkov Scan]
+
+    %% Gitleaks Scan Decision
+    C --> E{❓ Secrets Found?}
+    E -- Yes --> F[❌ Fail PR]
+    E -- No --> G[✅ Merge to Main]
+
+    %% Checkov Scan Decision
+    D --> H{⚠️ Security Issues?}
+    H -- Yes --> I[❌ Fail PR]
+    H -- No --> J[✅ Merge to Main]
+
+    %% Merge to Main continues
+    G --> K[🚀 Manual Dispatch Deployment]
+    J --> K
+
+    K --> L[💻 Launch New EC2 (Baked AMI)]
+    L --> M[🔍 Health Check via ALB]
+
+    M --> N{>=75% Healthy?}
+    N -- Yes --> O[🗑️ Terminate Old EC2]
+    N -- No --> P[⏱️ Wait / Retry]
+
+    O --> Q[🎉 Deployment Complete]
+    P --> Q
 ```
 
 ## Best Practices
@@ -149,39 +179,7 @@ This project uses **baked AMIs** for application deployment. The rollout strateg
 ---
 
 ## 📊 CI/CD + Rollout Flow (Diagram)
-flowchart TD
-    %% Developer Workflow
-    A[👨‍💻 Developer creates branch] --> B[🔀 Pull Request]
-
-    %% Security Scans
-    B --> C[🕵️‍♂️ Gitleaks Scan]
-    B --> D[🛡️ Checkov Scan]
-
-    C --> E{❓ Secrets Found?}
-    D --> F{⚠️ Security Issues?}
-
-    E -->|Yes| G[❌ Fail PR]
-    F -->|Yes| G
-
-    E -->|No| H[✅ Merge to Main]
-    F -->|No| H
-
-    %% Deployment Steps
-    H --> I[🚀 Manual Dispatch Deployment]
-    I --> J[🖥️ Launch New EC2 (Baked AMI)]
-    J --> K[🔎 Health Check via ALB]
-
-    K -->|>=75% Healthy| L[🗑️ Terminate Old EC2]
-    K -->|<75% Healthy| M[⏳ Wait / Retry]
-
-    L --> N[🎉 Deployment Complete]
-
-    %% Styling
-    classDef security fill:#ffe0e0,stroke:#ff0000,stroke-width:2px;
-    classDef deploy fill:#e0f7ff,stroke:#00aaff,stroke-width:2px;
-    class C,D,E,F,G security;
-    class H,I,J,K,L,M,N deploy;
-
+https://chatgpt.com/s/m_69d278893f448191a15c8f0dfbad98c6
 ---
 
 ## 📊 Monitoring & Logging
