@@ -7,39 +7,16 @@
 ## 🎯 Quick Overview
 
 This project provisions a secure, scalable 3-tier AWS infrastructure with:
-- **Frontend Tier**: Web servers behind a load balancer (public)
-- **Backend Tier**: Application servers (private with auto-scaling)
+- **Frontend Tier**:Application load balancer (public)
+- **Backend Tier**: Nginx in a private subnet hosting web app + API (private with auto-scaling)
 - **Database Tier**: RDS PostgreSQL/MySQL (isolated in private subnet)
 
 Think of it as the backbone for any modern web application—handling traffic at the edge, processing business logic, and persisting data securely.
 
 ---
 
-## 📊 Architecture Diagram
-```mermaid
-flowchart LR
-    Users((👥 Users / Internet))
-    IGW[Internet Gateway]
-    
-    subgraph Public["🌐 Public Tier"]
-        ALB[Application Load Balancer]     
-    end
-     subgraph Private_App["🔒Private App Tier <br/>Nginx/ Forward proxy "]
-       FE[Frontend Web Servers<br/>Auto-Scaling Group]
-    end 
-    subgraph Private_App["🔒 Private App Tier"]
-        BE[Backend API Servers]
-    end
-    
-    subgraph Private_DB["🔐 Private Database Tier"]
-        DB[(RDS Database)]
-    end
-    
-    Users -->|Internet Traffic| IGW
-    IGW --> ALB
-    ALB -->|Route Traffic| FE
-    FE -->|Internal API Calls| BE
-    BE -->|Query Data| DB
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/fd37697c-7f58-47a4-99cd-11e59d343b32" />
+
 ```
 
 ## Prerequisites
@@ -62,7 +39,7 @@ flowchart LR
 ## Outputs
 - Load Balancer DNS
 - Database Endpoint
-- EC2 Public ip
+
 
 ## Best Practices
 - Use remote state (S3 + DynamoDB) for collaboration
