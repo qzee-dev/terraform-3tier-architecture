@@ -1,44 +1,45 @@
-# terraform-3tier-architecture
-Infrastructure-as-Code project using Terraform to deploy a 3-tier architecture (frontend, backend, database) on AWS.
-## Table of Contents
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Prerequisites](#prerequisites)
-- [Project Structure](#project-structure)
-- [Usage](#usage)
-- [Outputs](#outputs)
-- [Best Practices](#best-practices)
-- [License](#license)
-## Overview
-This project demonstrates how to use Terraform to provision a secure and scalable 3-tier architecture. 
-It includes:
-- VPC and networking
-- Frontend web servers
-- Backend application servers
-- Database tier (RDS)
-  
-## Architecture
+# 🏗️ Terraform 3-Tier Architecture
+
+**A complete Infrastructure-as-Code solution for deploying a production-ready, highly available 3-tier architecture on AWS using Terraform.**
+
+---
+
+## 🎯 Quick Overview
+
+This project provisions a secure, scalable 3-tier AWS infrastructure with:
+- **Frontend Tier**: Web servers behind a load balancer (public)
+- **Backend Tier**: Application servers (private with auto-scaling)
+- **Database Tier**: RDS PostgreSQL/MySQL (isolated in private subnet)
+
+Think of it as the backbone for any modern web application—handling traffic at the edge, processing business logic, and persisting data securely.
+
+---
+
+## 📊 Architecture Diagram
+
 ```mermaid
 flowchart LR
-    Users((Users / Internet))
-
-    subgraph Public_Subnet
-        FE[Frontend]
+    Users((👥 Users / Internet))
+    IGW[Internet Gateway]
+    
+    subgraph Public["🌐 Public Tier"]
         ALB[Application Load Balancer]
+        FE[Frontend Web Servers]
     end
-
-    subgraph Private_Subnet_Backend
-        BE[Backend API]
+    
+    subgraph Private_App["🔒 Private App Tier"]
+        BE[Backend API Servers<br/>Auto-Scaling Group]
     end
-
-    subgraph Private_Subnet_Database
-        DB[(Database)]
+    
+    subgraph Private_DB["🔐 Private Database Tier"]
+        DB[(RDS Database)]
     end
-
-    Users --> FE
-    FE --> ALB
-    ALB --> BE
-    BE --> DB
+    
+    Users -->|Internet Traffic| IGW
+    IGW --> ALB
+    ALB -->|Route Traffic| FE
+    FE -->|Internal API Calls| BE
+    BE -->|Query Data| DB
 ```
 
 ## Prerequisites
