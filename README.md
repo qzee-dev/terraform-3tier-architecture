@@ -24,7 +24,7 @@ Think of it as the backbone for any modern web application—handling traffic at
 Here’s the **final, blended `README.md`** with a **Mermaid diagram** showing the CI/CD + rollout flow. This version is copy‑paste ready and GitHub‑standard:
 
 ```markdown
-# Terraform 3-Tier Architecture 🚀
+Terraform 3-Tier Architecture 🚀
 
 This project delivers a **ready-made DevOps implementation** with baked AMIs and GitHub Flow:
 
@@ -111,7 +111,7 @@ terraform-3tier-architecture/
 
 ## 🔍 CI/CD Workflow
 
-- **Developer workflow** → Branch → PR → Merge → Main.  
+- **DevOps/Sre workflow** → Branch → PR → Merge → Main.  
 - **Automated checks**:  
   - **Gitleaks** → scans every PR/push for secrets.  
   - **Checkov** → validates Terraform security best practices on every PR/push.  
@@ -143,16 +143,9 @@ This project uses **baked AMIs** for application deployment. The rollout strateg
 2. Wait until health checks pass (ALB target group).  
 3. Only then terminate old EC2 instances.  
 4. Maintain minimum health thresholds throughout rollout.  
-
 ---
-
 ## 📊 CI/CD + Rollout Flow (Diagram)
-
-
 <img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/f41f180e-29d3-4b5e-999a-59cd3583ae5e" />
-
----
-
 ## 📊 Monitoring & Logging
 
 - ALB access logs → S3 bucket  
@@ -171,29 +164,6 @@ aws logs tail /aws/vpc/flowlogs --follow
 - **Instances not launching** → Check ALB target group health  
 - **RDS connection refused** → Verify security group rules  
 - **State lock error** → `terraform force-unlock <LOCK_ID>`
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository  
-2. Create a feature branch  
-3. Commit changes  
-4. Push branch  
-5. Open a Pull Request  
-
-Pull Request Checklist:
-- `terraform fmt -recursive`  
-- `terraform validate`  
-- Checkov scan passes  
-- Gitleaks scan passes  
-- Documentation updated  
-
----
-
-## 📝 License
-
-MIT License - see LICENSE file.
 
 ---
 
@@ -220,11 +190,7 @@ MIT License - see LICENSE file.
 - **Deployment** is **manual dispatch only**, ensuring controlled release.  
 - **Rollout strategy** ensures safe cutover with health thresholds and no downtime.  
 
-**Happy Infrastructure Coding! 🚀**
-
 _Last Updated: April 5, 2026_
 ```
 
 ---
-
-This version now includes a **Mermaid diagram** that visually explains the CI/CD + rollout process, making the README both **developer-friendly and presentation-ready**.
