@@ -145,8 +145,8 @@ This project uses **baked AMIs** for application deployment. The rollout strateg
 ---
 ## 📊 CI/CD + Rollout Flow (Diagram)
 <img width="1024" height="1536" alt="image" src="https://github.com/user-attachments/assets/f41f180e-29d3-4b5e-999a-59cd3583ae5e" />
-## 📊 Monitoring & Logging
 
+## 📊 Monitoring & Logging
 - ALB access logs → S3 bucket  
 - VPC Flow Logs → CloudWatch  
 
