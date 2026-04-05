@@ -20,11 +20,11 @@ Think of it as the backbone for any modern web application—handling traffic at
 - Store secrets in AWS Secrets Manager
 - Apply least-privilege IAM role
 
-# Terraform 3-Tier Architecture summary  🚀
+## Terraform 3-Tier Architecture summary  🚀
 Here’s the **final, blended `README.md`** with a **Mermaid diagram** showing the CI/CD + rollout flow. This version is copy‑paste ready and GitHub‑standard:
 
 ```markdown
-Terraform 3-Tier Architecture 🚀
+## Terraform 3-Tier Architecture 🚀
 
 This project delivers a **ready-made DevOps implementation** with baked AMIs and GitHub Flow:
 
