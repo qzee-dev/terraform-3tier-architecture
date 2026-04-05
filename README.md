@@ -16,17 +16,16 @@ Think of it as the backbone for any modern web application—handling traffic at
 ---
 
 ## 📊 Architecture Diagram
-
 ```mermaid
 flowchart LR
     Users((👥 Users / Internet))
     IGW[Internet Gateway]
     
     subgraph Public["🌐 Public Tier"]
-        ALB[Application Load Balancer]
-        FE[Frontend Web Servers]
+        ALB[Application Load Balancer]     
     end
-    
+     subgraph Private_App["🔒 Nginx/proxy Private App Tier"]
+       FE[Frontend Web Servers]
     subgraph Private_App["🔒 Private App Tier"]
         BE[Backend API Servers<br/>Auto-Scaling Group]
     end
