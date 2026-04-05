@@ -149,25 +149,38 @@ This project uses **baked AMIs** for application deployment. The rollout strateg
 ---
 
 ## 📊 CI/CD + Rollout Flow (Diagram)
-
-```mermaid
 flowchart TD
-    A[Developer creates branch] --> B[Pull Request]
-    B --> C[Gitleaks Scan]
-    B --> D[Checkov Scan]
-    C --> E{Secrets Found?}
-    D --> F{Security Issues?}
-    E -->|Yes| G[Fail PR]
-    F -->|Yes| G[Fail PR]
-    E -->|No| H[Merge to Main]
-    F -->|No| H[Merge to Main]
-    H --> I[Manual Dispatch Deployment]
-    I --> J[Launch New EC2 (Baked AMI)]
-    J --> K[Health Check via ALB]
-    K -->|>=75% Healthy| L[Terminate Old EC2]
-    K -->|<75% Healthy| M[Wait / Retry]
-    L --> N[Deployment Complete]
-```
+    %% Developer Workflow
+    A[👨‍💻 Developer creates branch] --> B[🔀 Pull Request]
+
+    %% Security Scans
+    B --> C[🕵️‍♂️ Gitleaks Scan]
+    B --> D[🛡️ Checkov Scan]
+
+    C --> E{❓ Secrets Found?}
+    D --> F{⚠️ Security Issues?}
+
+    E -->|Yes| G[❌ Fail PR]
+    F -->|Yes| G
+
+    E -->|No| H[✅ Merge to Main]
+    F -->|No| H
+
+    %% Deployment Steps
+    H --> I[🚀 Manual Dispatch Deployment]
+    I --> J[🖥️ Launch New EC2 (Baked AMI)]
+    J --> K[🔎 Health Check via ALB]
+
+    K -->|>=75% Healthy| L[🗑️ Terminate Old EC2]
+    K -->|<75% Healthy| M[⏳ Wait / Retry]
+
+    L --> N[🎉 Deployment Complete]
+
+    %% Styling
+    classDef security fill:#ffe0e0,stroke:#ff0000,stroke-width:2px;
+    classDef deploy fill:#e0f7ff,stroke:#00aaff,stroke-width:2px;
+    class C,D,E,F,G security;
+    class H,I,J,K,L,M,N deploy;
 
 ---
 
