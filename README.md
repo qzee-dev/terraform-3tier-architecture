@@ -113,7 +113,7 @@ terraform-3tier-architecture/
 
 ## 🔍 CI/CD Workflow
 
-- **Developer workflow** → Branch → PR → Merge → Main.  
+- **Sre workflow** → Branch → PR → Merge → Main.  
 - **Automated checks**:  
   - **Gitleaks** → scans every PR/push for secrets.  
   - **Checkov** → validates Terraform security best practices on every PR/push.  
