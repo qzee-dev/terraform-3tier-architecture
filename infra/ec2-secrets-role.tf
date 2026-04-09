@@ -35,6 +35,13 @@ resource "aws_iam_role_policy_attachment" "attach_secrets" {
   policy_arn = aws_iam_policy.secrets_policy.arn
 }
 ########################################
+# IAM Policy attachement
+####################################
+resource "aws_iam_role_policy_attachment" "cloudwatch_agent" {
+  role       = aws_iam_role.ec2_secret_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+########################################
 # IAM Instance Profile → ec2-secrets-profile
 ####################################
 resource "aws_iam_instance_profile" "ec2_secrets_profile" {
