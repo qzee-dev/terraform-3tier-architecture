@@ -1,3 +1,6 @@
+###########################################################################
+  Cloudwatch Memory Alarm
+###########################################################################
 resource "aws_cloudwatch_metric_alarm" "memory_high" {
   alarm_name          = "memory-used-over-80"
   namespace           = "CWAgent"
@@ -14,7 +17,9 @@ resource "aws_cloudwatch_metric_alarm" "memory_high" {
 
   alarm_actions = [aws_autoscaling_policy.memory_scale_out.arn]
 }
-
+###########################################################################
+Cloud watch Alb Latency Alarm
+###########################################################################
 resource "aws_cloudwatch_metric_alarm" "alb_latency_high" {
   alarm_name          = "alb-latency-high"
   namespace           = "AWS/ApplicationELB"
