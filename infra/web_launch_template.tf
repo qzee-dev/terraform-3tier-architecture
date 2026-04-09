@@ -1,5 +1,5 @@
 ############################################
-# Launch Template for ASG + Docker + Nginx
+# Launch Template for ASG  packer ami
 ############################################
 resource "aws_launch_template" "web_lt" {
   name_prefix   = "webserver-"
@@ -28,8 +28,7 @@ resource "aws_launch_template" "web_lt" {
   }
 
 
- # Storage configuration
-
+  # Storage configuration
   block_device_mappings {
     device_name = "/dev/sda1"
 
@@ -40,17 +39,10 @@ resource "aws_launch_template" "web_lt" {
     }
   }
 
- # Application initialization # User data for Docker + Nginx + Docker Compose setup
-  user_data = base64encode(templatefile("${path.module}/user-data.sh", {
-    secret_name   = var.secret_name
-    region        = var.aws_region
-    webapp_image  = var.webapp_docker_image
-    api_image     = var.api_docker_image
-  }))
-
-# Resource tagging
+  # Resource tagging
   tag_specifications {
     resource_type = "instance"
+
     tags = {
       Name = "webserver-asg"
     }
