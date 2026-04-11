@@ -97,3 +97,31 @@ resource "aws_kms_key" "s3_kms_key" {
     ]
   })
 }
+######################################
+ ALB logs Retainment Circle Policy
+#####################################
+resource "aws_s3_bucket_lifecycle_configuration" "alb_logs_lifecycle" {
+  bucket = aws_s3_bucket.bucket1.id
+
+  rule {
+    id     = "alb-logs-lifecycle"
+    status = "Enabled"
+
+    # Move to cheaper storage
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 60
+      storage_class = "GLACIER"
+    }
+
+    # Delete eventually
+    expiration {
+      days = 90
+    }
+  }
+}
+
