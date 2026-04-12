@@ -11,11 +11,11 @@ This project provisions a secure, scalable 3-tier AWS infrastructure with:
 - **Backend Tier**: Nginx in a private subnet hosting web app + API (private with auto-scaling)
 - **Database Tier**: RDS PostgreSQL/MySQL (isolated in private subnet)
 Think of it as the backbone for any modern web application—handling traffic at the edge, processing business logic, and persisting data securely.
-#Internal Build Expression
-<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/611d0395-5fcb-4623-8a86-9613e4a1f142" />
-#External look Represntation
-<img width="1536" height="1024" alt="AWS 3-tier architecture diagram" src="https://github.com/user-attachments/assets/07139bda-ff2a-422c-84e8-324f47566f43" />
 
+## Internal Build Expression
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/611d0395-5fcb-4623-8a86-9613e4a1f142" />
+## External look Represntation
+<img width="1536" height="1024" alt="AWS 3-tier architecture diagram" src="https://github.com/user-attachments/assets/07139bda-ff2a-422c-84e8-324f47566f43" />
 
 ## Best Practices
 
