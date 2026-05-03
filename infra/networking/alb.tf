@@ -105,7 +105,8 @@ resource "aws_lb_listener" "https_listener" {
   load_balancer_arn = aws_lb.app_alb.arn
   port              = 443
   protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  # CKV_AWS_103: Ensure ALB Listener uses secure SSL/TLS protocols (TLS 1.2+)
+  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
   certificate_arn   = aws_acm_certificate.example.arn # Your ACM cert
 
   default_action {

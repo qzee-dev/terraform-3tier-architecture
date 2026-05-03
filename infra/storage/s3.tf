@@ -59,6 +59,11 @@ resource "aws_s3_bucket_public_access_block" "bucket1_block" {
 resource "aws_s3_bucket" "alb_logs" {
   bucket = "alb-logs-bucket-qzee"
 
+  # CKV_AWS_144: Ensure that S3 bucket has versioning enabled
+  versioning {
+    enabled = true
+  }
+
   tags = {
     Name        = "ALB Logs Bucket"
     Environment = "Dev"
@@ -74,4 +79,15 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "alb_logs_encrypti
       sse_algorithm     = "aws:kms"
     }
   }
+}
+
+############################################
+# BLOCK PUBLIC ACCESS FOR ALB LOGS
+############################################
+resource "aws_s3_bucket_public_access_block" "alb_logs_block" {
+  bucket                  = aws_s3_bucket.alb_logs.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }

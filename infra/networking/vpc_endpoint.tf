@@ -12,14 +12,24 @@ resource "aws_security_group" "vpc_endpoints_sg" {
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = [aws_vpc.main.cidr_block]
+    description = "Allow HTTPS from VPC resources"
   }
 
-  # Allow all outbound traffic
+  # CKV_AWS_382: Restrict egress to specific ports and protocols
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow HTTPS outbound for AWS services"
+  }
+
+  egress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "Allow HTTP outbound for AWS services"
   }
 
   tags = {

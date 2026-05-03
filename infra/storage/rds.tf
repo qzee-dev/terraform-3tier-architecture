@@ -43,6 +43,23 @@ resource "aws_db_instance" "mysql" {
   username = "admin"
   password = var.db_password
 
+  # CKV_AWS_16: Ensure all data stored in the RDS is securely encrypted at rest
+  storage_encrypted = true
+
+  # CKV_AWS_17: Ensure RDS instances have Multi-AZ enabled
+  multi_az = true
+
+  # CKV_AWS_157: Ensure that RDS instances have logging enabled
+  enabled_cloudwatch_logs_exports = ["error", "general", "slow-query"]
+
+  # CKV_AWS_226: Ensure DB instance gets all minor upgrades automatically
+  auto_minor_version_upgrade = true
+
+  # CKV_AWS_8: Ensure RDS instances have backup retention >0
+  backup_retention_period = 7
+
+  # CKV_AWS_133: Ensure that RDS instances have copy tags to snapshots enabled
+  copy_tags_to_snapshot = true
 
   db_subnet_group_name   = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
