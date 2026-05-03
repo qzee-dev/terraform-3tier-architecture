@@ -56,7 +56,7 @@ resource "aws_lb" "app_alb" {
   drop_invalid_header_fields = true
 
   access_logs {
-    bucket  = aws_s3_bucket.alb_logs.id
+    bucket  = var.alb_logs_bucket_id
     prefix  = "alb-logs"
     enabled = true
   }

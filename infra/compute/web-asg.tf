@@ -4,8 +4,8 @@ resource "aws_autoscaling_group" "web_asg" {
   max_size           = 4
   desired_capacity   = 2
   vpc_zone_identifier = [
-    aws_subnet.subnet1.id,
-    aws_subnet.subnet2.id
+    var.subnet1_id,
+    var.subnet2_id
   ]
 
   launch_template {
@@ -13,7 +13,7 @@ resource "aws_autoscaling_group" "web_asg" {
     version = "$Latest"
   }
 
-  target_group_arns = [aws_lb_target_group.app_tg.arn]
+  target_group_arns = [var.app_tg_arn]
 
   health_check_type         = "ELB"
   health_check_grace_period = 30

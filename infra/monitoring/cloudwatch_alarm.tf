@@ -12,10 +12,10 @@ resource "aws_cloudwatch_metric_alarm" "memory_high" {
   comparison_operator = "GreaterThanThreshold"
 
   dimensions = {
-    AutoScalingGroupName = aws_autoscaling_group.web_asg.name
+    AutoScalingGroupName = var.web_asg_name
   }
 
-  alarm_actions = [aws_autoscaling_policy.memory_scale_out.arn]
+  alarm_actions = [var.memory_scale_out_policy_arn]
 }
 ###########################################################################
   Cloudwatch Container Alarm
@@ -33,7 +33,7 @@ resource "aws_cloudwatch_metric_alarm" "container_restarts" {
   comparison_operator = "GreaterThanThreshold"
 
   dimensions = {
-    AutoScalingGroupName = aws_autoscaling_group.web_asg.name
+    AutoScalingGroupName = var.web_asg_name
   }
 }
 ###########################################################################
@@ -50,8 +50,8 @@ resource "aws_cloudwatch_metric_alarm" "alb_latency_high" {
   comparison_operator = "GreaterThanThreshold"
 
   dimensions = {
-    TargetGroup  = aws_lb_target_group.app_tg.arn_suffix
-    LoadBalancer = aws_lb.app_lb.arn_suffix
+    TargetGroup  = var.app_tg_arn_suffix
+    LoadBalancer = var.app_lb_arn_suffix
   }
 }
 ###########################################################################

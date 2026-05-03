@@ -52,3 +52,26 @@ resource "aws_s3_bucket_public_access_block" "bucket1_block" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+
+############################################
+# ALB LOGS BUCKET
+############################################
+resource "aws_s3_bucket" "alb_logs" {
+  bucket = "alb-logs-bucket-qzee"
+
+  tags = {
+    Name        = "ALB Logs Bucket"
+    Environment = "Dev"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "alb_logs_encryption" {
+  bucket = aws_s3_bucket.alb_logs.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.s3_kms_key.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 resource "aws_security_group" "rds_sg" {
   name        = "rds-security-group"
   description = "Security group for RDS instance"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port   = 3306
@@ -25,8 +25,8 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
   description = "Subnet group for RDS instance"
 
   subnet_ids = [
-    aws_subnet.private_subnet_1a_cidr.id,
-    aws_subnet.private_subnet_1b_cidr.id
+    var.subnet3_id,
+    var.subnet4_id
   ]
 
   tags = {

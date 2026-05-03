@@ -3,7 +3,7 @@ resource "aws_vpc" "main" {
 }
 
 # Subnet 1
-resource "aws_subnet" "public_subnet_1a_cidr" {
+resource "aws_subnet" "subnet1" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.public_subnet_1a_cidr
   availability_zone       = "us-east-1a"
@@ -14,7 +14,7 @@ resource "aws_subnet" "public_subnet_1a_cidr" {
 }
 
 # Subnet 2
-resource "aws_subnet" "public_subnet_1b_cidr" {
+resource "aws_subnet" "subnet2" {
   vpc_id                  = aws_vpc.main.id
   cidr_block              = var.public_subnet_1b_cidr
   availability_zone       = "us-east-1b"
@@ -26,7 +26,7 @@ resource "aws_subnet" "public_subnet_1b_cidr" {
 
 
 # Subnet 3
-resource "aws_subnet" "private_subnet_1a_cidr" {
+resource "aws_subnet" "subnet3" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.private_subnet_1a_cidr
   availability_zone = "us-east-1a"
@@ -36,7 +36,7 @@ resource "aws_subnet" "private_subnet_1a_cidr" {
 }
 
 # Subnet 4
-resource "aws_subnet" "private_subnet_1b_cidr" {
+resource "aws_subnet" "subnet4" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.private_subnet_1b_cidr
   availability_zone = "us-east-1b"
@@ -69,13 +69,12 @@ resource "aws_route_table" "public" {
 }
 
 resource "aws_route_table_association" "public_subnet_1a_cidr" {
-  subnet_id      = aws_subnet.public_subnet_1a_cidr.id
+  subnet_id      = aws_subnet.subnet1.id
   route_table_id = aws_route_table.public.id
 
 }
 resource "aws_route_table_association" "public_subnet_1b_cidr" {
-  subnet_id      = aws_subnet.public_subnet_1b_cidr.id
+  subnet_id      = aws_subnet.subnet2.id
   route_table_id = aws_route_table.public.id
 
 }
-

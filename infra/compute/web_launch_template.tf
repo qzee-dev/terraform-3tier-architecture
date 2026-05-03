@@ -10,11 +10,11 @@ resource "aws_launch_template" "web_lt" {
 # IAM permissions for instance
 
   iam_instance_profile {
-    name = aws_iam_instance_profile.ec2_rds_secrets_profile.name
+    name = var.iam_profile_name
   }
 
  # Network interface security
-  vpc_security_group_ids       = [aws_security_group.ec2_sg.id]
+  vpc_security_group_ids       = [var.ec2_sg_id]
  
   associate_public_ip_address = false   # Private subnet, no public IP
   monitoring                  = true
