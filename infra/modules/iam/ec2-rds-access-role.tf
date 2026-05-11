@@ -117,7 +117,7 @@ resource "aws_secretsmanager_secret" "rds_credentials" {
 
 # CKV2_AWS_57: Enable automatic rotation for Secrets Manager secret
 resource "aws_secretsmanager_secret_rotation" "rds_credentials_rotation" {
-  secret_id           = aws_secretsmanager_secret.rds_credentials.id
+  secret_id = aws_secretsmanager_secret.rds_credentials.id
   rotation_rules {
     automatically_after_days = 30
   }
