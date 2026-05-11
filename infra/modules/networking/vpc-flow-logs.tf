@@ -1,6 +1,32 @@
+data "aws_caller_identity" "current" {}
+
 resource "aws_kms_key" "vpc_flow_logs_key" {
   description             = "KMS key for VPC flow logs"
   deletion_window_in_days = 30
+  enable_key_rotation     = true
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "Allow VPC Flow Logs"
+        Effect = "Allow"
+        Principal = {
+          Service = "vpc-flow-logs.amazonaws.com"
+        }
+        Action   = ["kms:Encrypt", "kms:Decrypt", "kms:ReEncrypt*", "kms:GenerateDataKey*", "kms:DescribeKey"]
+        Resource = "*"
+      },
+      {
+        Sid    = "Allow Root Account"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role" "vpc_flow_logs_role" {

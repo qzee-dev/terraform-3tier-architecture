@@ -15,3 +15,13 @@ variable "project_name" {
   type        = string
   default     = "qzee-demo"
 }
+
+variable "private_subnet_id" {
+  description = "Private subnet ID for lambda"
+  type        = string
+}
+
+variable "lambda_sg_id" {
+  description = "Security group ID for lambda"
+  type        = string
+}

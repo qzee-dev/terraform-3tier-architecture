@@ -107,6 +107,10 @@ resource "aws_s3_bucket_lifecycle_configuration" "alb_logs_lifecycle" {
     id     = "alb-logs-lifecycle"
     status = "Enabled"
 
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
     # Move to cheaper storage
     transition {
       days          = 30

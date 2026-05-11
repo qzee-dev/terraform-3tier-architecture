@@ -1,10 +1,42 @@
 ################################################################################
 # CloudWatch Agent Config
 ################################################################################
+data "aws_caller_identity" "current" {}
+
+resource "aws_kms_key" "ssm_key" {
+  description             = "KMS key for SSM parameter encryption"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "Allow SSM"
+        Effect = "Allow"
+        Principal = {
+          Service = "ssm.amazonaws.com"
+        }
+        Action   = ["kms:Encrypt", "kms:Decrypt", "kms:ReEncrypt*", "kms:GenerateDataKey*", "kms:DescribeKey"]
+        Resource = "*"
+      },
+      {
+        Sid    = "Allow Root Account"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 resource "aws_ssm_parameter" "cloudwatch_agent_config" {
   name        = "/cloudwatch/agent/ec2/default"
   description = "CloudWatch Agent config for EC2 Docker hosts"
-  type        = "String"
+  type        = "SecureString"
+  key_id      = aws_kms_key.ssm_key.id
 
   value = jsonencode({
     metrics = {

@@ -48,6 +48,19 @@ resource "aws_s3_bucket_public_access_block" "bucket1_block" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_notification" "bucket1_notification" {
+  bucket = aws_s3_bucket.bucket1.id
+
+  # Placeholder notification
+}
+
+resource "aws_s3_bucket_logging" "bucket1_logging" {
+  bucket = aws_s3_bucket.bucket1.id
+
+  target_bucket = aws_s3_bucket.bucket1.id
+  target_prefix = "access-logs/"
+}
+
 ############################################
 # ALB LOGS BUCKET
 ############################################
@@ -63,6 +76,19 @@ resource "aws_s3_bucket" "alb_logs" {
     Name        = "ALB Logs Bucket"
     Environment = "Dev"
   }
+}
+
+resource "aws_s3_bucket_logging" "alb_logs_logging" {
+  bucket = aws_s3_bucket.alb_logs.id
+
+  target_bucket = aws_s3_bucket.alb_logs.id
+  target_prefix = "access-logs/"
+}
+
+resource "aws_s3_bucket_notification" "alb_logs_notification" {
+  bucket = aws_s3_bucket.alb_logs.id
+
+  # Placeholder notification - in real scenario, add lambda or SNS
 }
 
 

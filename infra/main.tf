@@ -14,7 +14,9 @@ module "storage" {
 }
 
 module "iam" {
-  source = "./modules/iam"
+  source            = "./modules/iam"
+  private_subnet_id = module.networking.private_subnet_id
+  lambda_sg_id      = module.networking.lambda_sg_id
 }
 
 module "compute" {

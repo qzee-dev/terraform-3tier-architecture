@@ -110,11 +110,17 @@ resource "aws_iam_instance_profile" "ec2_rds_secrets_profile" {
 }
 
 resource "aws_secretsmanager_secret" "rds_credentials" {
-  name = "${var.project_name}-${var.environment}-rds-credentials"
+  name                    = "${var.project_name}-${var.environment}-rds-credentials"
+  kms_key_id              = aws_kms_key.rds_secrets_key.id
+  recovery_window_in_days = 0
 }
 
+# Rotation not implemented as it's a demo
+
 resource "aws_kms_key" "rds_secrets_key" {
-  description = "KMS key for RDS secrets"
+  description             = "KMS key for RDS secrets"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -122,9 +128,9 @@ resource "aws_kms_key" "rds_secrets_key" {
         Sid    = "Allow use of the key"
         Effect = "Allow"
         Principal = {
-          AWS = "*"
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
         }
-        Action   = ["kms:Decrypt", "kms:DescribeKey"]
+        Action   = ["kms:*"]
         Resource = "*"
       }
     ]

@@ -2,6 +2,12 @@ resource "aws_vpc" "main" {
   cidr_block = var.vpc_cidr_block
 }
 
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.main.id
+
+  # No ingress or egress rules - fully restricted
+}
+
 # Subnet 1
 resource "aws_subnet" "subnet1" {
   vpc_id                  = aws_vpc.main.id

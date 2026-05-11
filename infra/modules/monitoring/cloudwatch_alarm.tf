@@ -95,8 +95,38 @@ resource "aws_cloudwatch_metric_alarm" "container_restarts_detected" {
   ]
 }
 
+resource "aws_kms_key" "sns_key" {
+  description             = "KMS key for SNS topic encryption"
+  deletion_window_in_days = 30
+  enable_key_rotation     = true
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "Allow SNS"
+        Effect = "Allow"
+        Principal = {
+          Service = "sns.amazonaws.com"
+        }
+        Action   = ["kms:Encrypt", "kms:Decrypt", "kms:ReEncrypt*", "kms:GenerateDataKey*", "kms:DescribeKey"]
+        Resource = "*"
+      },
+      {
+        Sid    = "Allow Root Account"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 resource "aws_sns_topic" "ops_alerts" {
-  name = "${var.project_name}-${var.environment}-ops-alerts"
+  name              = "${var.project_name}-${var.environment}-ops-alerts"
+  kms_master_key_id = aws_kms_key.sns_key.id
 }
 
 

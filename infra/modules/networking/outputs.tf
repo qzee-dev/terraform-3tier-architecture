@@ -18,6 +18,14 @@ output "subnet4_id" {
   value = aws_subnet.subnet4.id
 }
 
+output "private_subnet_id" {
+  value = aws_subnet.subnet1.id
+}
+
+output "lambda_sg_id" {
+  value = aws_security_group.ec2_sg.id
+}
+
 output "app_tg_arn" {
   value = aws_lb_target_group.app_tg.arn
 }

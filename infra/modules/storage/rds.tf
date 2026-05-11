@@ -53,6 +53,7 @@ resource "aws_db_instance" "mysql" {
   enabled_cloudwatch_logs_exports = ["error", "general", "slowquery"]
 
   # CKV_AWS_226: Ensure DB instance gets all minor upgrades automatically
+  auto_minor_version_upgrade = true
 
   # CKV_AWS_8: Ensure RDS instances have backup retention >0
   backup_retention_period = 7
