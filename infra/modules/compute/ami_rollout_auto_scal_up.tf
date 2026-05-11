@@ -19,11 +19,11 @@ resource "aws_launch_template" "web" {
 
 # 2️⃣ Use existing Auto Scaling Group
 resource "aws_autoscaling_group" "existing_asg" {
-  count                    = var.enable_ami_rollout ? 1 : 0
-  name                      = var.existing_asg_name
-  min_size                  = 1
-  max_size                  = 3
-  desired_capacity          = 2
+  count            = var.enable_ami_rollout ? 1 : 0
+  name             = var.existing_asg_name
+  min_size         = 1
+  max_size         = 3
+  desired_capacity = 2
 
   # Use latest launch template version
   launch_template {
@@ -36,7 +36,7 @@ resource "aws_autoscaling_group" "existing_asg" {
     strategy = "Rolling"
 
     preferences {
-      min_healthy_percentage = 66    # safe for 2→3 instances
+      min_healthy_percentage = 66 # safe for 2→3 instances
       instance_warmup        = 120
     }
 
@@ -49,7 +49,7 @@ resource "aws_autoscaling_policy" "scale_up" {
   count                  = var.enable_ami_rollout ? 1 : 0
   name                   = "scale-up-before-refresh"
   autoscaling_group_name = var.existing_asg_name
-  scaling_adjustment     = 1        # add 1 instance as safety buffer
+  scaling_adjustment     = 1 # add 1 instance as safety buffer
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
 }
@@ -58,7 +58,7 @@ resource "aws_autoscaling_policy" "scale_up" {
 resource "aws_autoscaling_policy" "scale_down" {
   name                   = "scale-down-after-refresh"
   autoscaling_group_name = var.existing_asg_name
-  scaling_adjustment     = -1       # remove buffer instance
+  scaling_adjustment     = -1 # remove buffer instance
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
 }

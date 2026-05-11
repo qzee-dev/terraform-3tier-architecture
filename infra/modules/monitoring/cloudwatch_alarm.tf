@@ -21,9 +21,9 @@ resource "aws_cloudwatch_metric_alarm" "memory_high" {
 # Cloudwatch Container Alarm
 ###########################################################################
 resource "aws_cloudwatch_metric_alarm" "container_restarts" {
-  alarm_name          = "container-restart-detected"
-  alarm_description   = "Triggers when any Docker container restarts on ASG instances"
-  
+  alarm_name        = "container-restart-detected"
+  alarm_description = "Triggers when any Docker container restarts on ASG instances"
+
   namespace           = "CWAgent"
   metric_name         = "container_restarts"
   statistic           = "Sum"

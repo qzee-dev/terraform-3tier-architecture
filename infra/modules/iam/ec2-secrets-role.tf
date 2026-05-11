@@ -6,9 +6,9 @@ resource "aws_iam_role" "ec2_secrets_role" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
-      Effect = "Allow",
+      Effect    = "Allow",
       Principal = { Service = "ec2.amazonaws.com" },
-      Action = "sts:AssumeRole"
+      Action    = "sts:AssumeRole"
     }]
   })
 }
@@ -18,7 +18,7 @@ resource "aws_iam_role" "ec2_secrets_role" {
 resource "aws_iam_policy" "secrets_policy" {
   name        = "secretsmanager-rds-access"
   description = "Allow EC2 to read RDS secrets"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17",
     Statement = [{
       Effect   = "Allow",

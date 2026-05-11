@@ -1,9 +1,9 @@
 resource "aws_autoscaling_group" "web_asg" {
-  count              = var.enable_ami_rollout ? 0 : 1
-  name               = "web-asg"
-  min_size           = 2
-  max_size           = 4
-  desired_capacity   = 2
+  count            = var.enable_ami_rollout ? 0 : 1
+  name             = "web-asg"
+  min_size         = 2
+  max_size         = 4
+  desired_capacity = 2
   vpc_zone_identifier = [
     var.subnet1_id,
     var.subnet2_id

@@ -41,8 +41,8 @@ resource "aws_security_group" "vpc_endpoints_sg" {
 # GATEWAY ENDPOINT: S3 (FREE)
 ############################################
 resource "aws_vpc_endpoint" "s3" {
-  vpc_id       = aws_vpc.main.id
-  service_name = "com.amazonaws.us-east-1.s3"
+  vpc_id            = aws_vpc.main.id
+  service_name      = "com.amazonaws.us-east-1.s3"
   vpc_endpoint_type = "Gateway"
 
   route_table_ids = [
@@ -64,9 +64,9 @@ resource "aws_vpc_endpoint" "ssm" {
   private_dns_enabled = true
 
   subnet_ids = [
-      aws_subnet.subnet3.id,
-      aws_subnet.subnet4.id
-    ]
+    aws_subnet.subnet3.id,
+    aws_subnet.subnet4.id
+  ]
 }
 
 ############################################
@@ -79,9 +79,9 @@ resource "aws_vpc_endpoint" "ssmmessages" {
   private_dns_enabled = true
 
   subnet_ids = [
-      aws_subnet.subnet3.id,
-      aws_subnet.subnet4.id
-    ]
+    aws_subnet.subnet3.id,
+    aws_subnet.subnet4.id
+  ]
 }
 
 ############################################
@@ -94,9 +94,9 @@ resource "aws_vpc_endpoint" "ec2messages" {
   private_dns_enabled = true
 
   subnet_ids = [
-      aws_subnet.subnet3.id,
-      aws_subnet.subnet4.id
-    ]
+    aws_subnet.subnet3.id,
+    aws_subnet.subnet4.id
+  ]
 }
 
 ############################################
@@ -109,9 +109,9 @@ resource "aws_vpc_endpoint" "logs" {
   private_dns_enabled = true
 
   subnet_ids = [
-      aws_subnet.subnet3.id,
-      aws_subnet.subnet4.id
-    ]
+    aws_subnet.subnet3.id,
+    aws_subnet.subnet4.id
+  ]
 }
 
 ############################################
@@ -124,9 +124,9 @@ resource "aws_vpc_endpoint" "secretsmanager" {
   private_dns_enabled = true
 
   subnet_ids = [
-      aws_subnet.subnet3.id,
-      aws_subnet.subnet4.id
-    ]
+    aws_subnet.subnet3.id,
+    aws_subnet.subnet4.id
+  ]
 }
 
 ############################################
@@ -139,9 +139,9 @@ resource "aws_vpc_endpoint" "kms" {
   private_dns_enabled = true
 
   subnet_ids = [
-      aws_subnet.subnet3.id,
-      aws_subnet.subnet4.id
-    ]
+    aws_subnet.subnet3.id,
+    aws_subnet.subnet4.id
+  ]
 }
 
 ############################################
@@ -154,7 +154,7 @@ resource "aws_vpc_endpoint" "ec2" {
   private_dns_enabled = true
 
   subnet_ids = [
-      aws_subnet.subnet3.id,
-      aws_subnet.subnet4.id
-    ]
+    aws_subnet.subnet3.id,
+    aws_subnet.subnet4.id
+  ]
 }

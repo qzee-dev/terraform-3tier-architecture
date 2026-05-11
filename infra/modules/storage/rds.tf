@@ -21,7 +21,7 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
-  name       = "rds-subnet-group"
+  name        = "rds-subnet-group"
   description = "Subnet group for RDS instance"
 
   subnet_ids = [

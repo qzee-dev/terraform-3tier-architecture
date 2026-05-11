@@ -106,8 +106,8 @@ resource "aws_lb_listener" "https_listener" {
   port              = 443
   protocol          = "HTTPS"
   # CKV_AWS_103: Ensure ALB Listener uses secure SSL/TLS protocols (TLS 1.2+)
-  ssl_policy        = "ELBSecurityPolicy-TLS-1-2-2017-01"
-  certificate_arn   = var.alb_certificate_arn
+  ssl_policy      = "ELBSecurityPolicy-TLS-1-2-2017-01"
+  certificate_arn = var.alb_certificate_arn
 
   default_action {
     type             = "forward"

@@ -10,15 +10,15 @@ resource "aws_ssm_parameter" "cloudwatch_agent_config" {
     metrics = {
       metrics_collected = {
         mem = {
-          measurement = ["mem_used_percent"]
+          measurement                 = ["mem_used_percent"]
           metrics_collection_interval = 60
         }
         docker = {
-          measurement = ["container_restarts"]
+          measurement                 = ["container_restarts"]
           metrics_collection_interval = 60
         }
         net = {
-          measurement = ["bytes_sent", "bytes_recv"]
+          measurement                 = ["bytes_sent", "bytes_recv"]
           metrics_collection_interval = 60
         }
       }

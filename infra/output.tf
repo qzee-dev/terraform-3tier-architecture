@@ -24,7 +24,7 @@ output "vpc_id" {
 
 # 4. ASG Instance Private IPs (Debugging)
 output "asg_private_ips" {
-  value = []  # Placeholder, as data source not defined
+  value = [] # Placeholder, as data source not defined
 }
 # Output: ["10.0.0.1", "10.0.0.2"]
 # Usage:  SSH into instances via bastion host

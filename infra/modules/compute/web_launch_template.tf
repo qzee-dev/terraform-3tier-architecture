@@ -3,17 +3,17 @@
 ############################################
 resource "aws_launch_template" "web_lt" {
   name_prefix   = "webserver-"
-  image_id      = var.new_ami_id        # Use your AMI with OS of choice
+  image_id      = var.new_ami_id # Use your AMI with OS of choice
   instance_type = var.instance_type1
   key_name      = "my-keypair-name"
 
-# IAM permissions for instance
+  # IAM permissions for instance
 
   iam_instance_profile {
     name = var.iam_profile_name
   }
 
- # Network interface security
+  # Network interface security
   vpc_security_group_ids = [var.ec2_sg_id]
 
   monitoring {
@@ -22,7 +22,7 @@ resource "aws_launch_template" "web_lt" {
 
   ebs_optimized = true
 
-# EC2 Instance Metadata Service hardening
+  # EC2 Instance Metadata Service hardening
   metadata_options {
     http_tokens                 = "required"
     http_endpoint               = "enabled"

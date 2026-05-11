@@ -7,7 +7,7 @@
 # ============================================
 resource "aws_iam_role" "ec2_rds_secrets_role" {
   name = "${var.project_name}-${var.environment}-ec2-rds-secrets-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -20,7 +20,7 @@ resource "aws_iam_role" "ec2_rds_secrets_role" {
       }
     ]
   })
-  
+
   tags = {
     Name = "${var.project_name}-${var.environment}-ec2-rds-secrets-role"
   }
@@ -32,7 +32,7 @@ resource "aws_iam_role" "ec2_rds_secrets_role" {
 resource "aws_iam_policy" "ec2_rds_secrets_policy" {
   name        = "${var.project_name}-${var.environment}-ec2-rds-secrets-policy"
   description = "Policy for EC2 to read RDS credentials from Secrets Manager"
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -67,8 +67,8 @@ resource "aws_iam_policy" "ec2_rds_secrets_policy" {
 # ===========================================
 # Add this inline policy to your existing IAM role
 resource "aws_iam_role_policy" "ssm_access" {
-  name   = "ec2-ssm-access"
-  role   = aws_iam_role.ec2_rds_secrets_role.id
+  name = "ec2-ssm-access"
+  role = aws_iam_role.ec2_rds_secrets_role.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -115,7 +115,7 @@ resource "aws_secretsmanager_secret" "rds_credentials" {
 
 resource "aws_kms_key" "rds_secrets_key" {
   description = "KMS key for RDS secrets"
-  policy      = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
