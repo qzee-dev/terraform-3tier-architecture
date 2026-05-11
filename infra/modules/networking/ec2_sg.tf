@@ -1,3 +1,5 @@
+# CKV2_AWS_5: Security group is used by EC2 instances (attached to instances or ENIs)
+#checkov:skip=CKV2_AWS_5
 resource "aws_security_group" "ec2_sg" {
   name        = "ec2-security-group"
   description = "Allow traffic from ALB to EC2"

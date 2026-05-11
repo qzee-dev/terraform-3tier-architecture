@@ -62,6 +62,7 @@ resource "aws_vpc_endpoint" "ssm" {
   service_name        = "com.amazonaws.us-east-1.ssm"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
+  security_group_ids  = [aws_security_group.vpc_endpoints_sg.id]
 
   subnet_ids = [
     aws_subnet.subnet3.id,
@@ -77,6 +78,7 @@ resource "aws_vpc_endpoint" "ssmmessages" {
   service_name        = "com.amazonaws.us-east-1.ssmmessages"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
+  security_group_ids  = [aws_security_group.vpc_endpoints_sg.id]
 
   subnet_ids = [
     aws_subnet.subnet3.id,
@@ -92,6 +94,7 @@ resource "aws_vpc_endpoint" "ec2messages" {
   service_name        = "com.amazonaws.us-east-1.ec2messages"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
+  security_group_ids  = [aws_security_group.vpc_endpoints_sg.id]
 
   subnet_ids = [
     aws_subnet.subnet3.id,
@@ -107,6 +110,7 @@ resource "aws_vpc_endpoint" "logs" {
   service_name        = "com.amazonaws.us-east-1.logs"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
+  security_group_ids  = [aws_security_group.vpc_endpoints_sg.id]
 
   subnet_ids = [
     aws_subnet.subnet3.id,
@@ -122,6 +126,7 @@ resource "aws_vpc_endpoint" "secretsmanager" {
   service_name        = "com.amazonaws.us-east-1.secretsmanager"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
+  security_group_ids  = [aws_security_group.vpc_endpoints_sg.id]
 
   subnet_ids = [
     aws_subnet.subnet3.id,
@@ -137,6 +142,7 @@ resource "aws_vpc_endpoint" "kms" {
   service_name        = "com.amazonaws.us-east-1.kms"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
+  security_group_ids  = [aws_security_group.vpc_endpoints_sg.id]
 
   subnet_ids = [
     aws_subnet.subnet3.id,
@@ -152,6 +158,7 @@ resource "aws_vpc_endpoint" "ec2" {
   service_name        = "com.amazonaws.us-east-1.ec2"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
+  security_group_ids  = [aws_security_group.vpc_endpoints_sg.id]
 
   subnet_ids = [
     aws_subnet.subnet3.id,

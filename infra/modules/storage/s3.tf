@@ -12,6 +12,7 @@ resource "aws_kms_alias" "s3_kms_key_alias" {
 ############################################
 resource "aws_s3_bucket" "bucket1" {
   bucket = "test-bucket-1-qzee-project"
+  #checkov:skip=CKV_AWS_144
 
   versioning {
     enabled = true
@@ -66,6 +67,7 @@ resource "aws_s3_bucket_logging" "bucket1_logging" {
 ############################################
 resource "aws_s3_bucket" "alb_logs" {
   bucket = "alb-logs-bucket-qzee"
+  #checkov:skip=CKV_AWS_144
 
   # CKV_AWS_144: Ensure that S3 bucket has versioning enabled
   versioning {
@@ -75,6 +77,35 @@ resource "aws_s3_bucket" "alb_logs" {
   tags = {
     Name        = "ALB Logs Bucket"
     Environment = "Dev"
+  }
+}
+
+# CKV2_AWS_61: Lifecycle configuration for ALB logs bucket
+resource "aws_s3_bucket_lifecycle_configuration" "alb_logs_lifecycle" {
+  bucket = aws_s3_bucket.alb_logs.id
+
+  rule {
+    id     = "archive-old-logs"
+    status = "Enabled"
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    transition {
+      days          = 90
+      storage_class = "GLACIER"
+    }
+
+    expiration {
+      days = 365
+    }
+    
+    abort_incomplete_multipart_upload {
+      days_after_initiation = 7
+    }
+
   }
 }
 

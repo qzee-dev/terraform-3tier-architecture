@@ -115,7 +115,13 @@ resource "aws_secretsmanager_secret" "rds_credentials" {
   recovery_window_in_days = 0
 }
 
-# Rotation not implemented as it's a demo
+# CKV2_AWS_57: Enable automatic rotation for Secrets Manager secret
+resource "aws_secretsmanager_secret_rotation" "rds_credentials_rotation" {
+  secret_id           = aws_secretsmanager_secret.rds_credentials.id
+  rotation_rules {
+    automatically_after_days = 30
+  }
+}
 
 resource "aws_kms_key" "rds_secrets_key" {
   description             = "KMS key for RDS secrets"

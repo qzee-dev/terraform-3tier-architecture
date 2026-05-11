@@ -1,5 +1,9 @@
 resource "aws_vpc" "main" {
   cidr_block = var.vpc_cidr_block
+
+  tags = {
+      Name = "main-vpc"
+  }
 }
 
 resource "aws_default_security_group" "default" {
@@ -36,6 +40,7 @@ resource "aws_subnet" "subnet3" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.private_subnet_1a_cidr
   availability_zone = "us-east-1a"
+
   tags = {
     Name = "private_subnet_1a"
   }
@@ -83,4 +88,24 @@ resource "aws_route_table_association" "public_subnet_1b_cidr" {
   subnet_id      = aws_subnet.subnet2.id
   route_table_id = aws_route_table.public.id
 
+}
+
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+
+
+  tags = {
+    Name = "private_route"
+  }
+}
+
+resource "aws_route_table_association" "private_subnet_1a_cidr" {
+  subnet_id      = aws_subnet.subnet3.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route_table_association" "private_subnet_1b_cidr" {
+  subnet_id      = aws_subnet.subnet4.id
+  route_table_id = aws_route_table.private.id
 }
