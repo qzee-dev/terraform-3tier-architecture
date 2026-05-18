@@ -1,0 +1,163 @@
+#Step By Step Instruction
+#Vault installation:
+#===========================
+#Create Hachicorp Server
+#============================
+i)https://developer.hashicorp.com/vault/docs/install/install-binary
+ii)Download file for your Os and unzip
+iii)Setting up Vault in production mode:
+vault server -config ./vault-config.hcl
+
+iv)export VAULT_ADDR=http://localhost:8200
+v)vault status
+vi)vault operator init -key-shares=1 -key-threshold=1
+vii)export VAULT_TOKEN=<root_token>
+
+vault operator unseal
+
+vault audit enable file file_path=./data/vault_audit.log
+#=================================================
+#Create IAM Role Attach it to Hachicorp EC2 Server
+#=================================================
+i)create Iam role
+Name:vault-aws-role
+ii)Permision:
+[full ec2 permission,s3 and RDS]
+iii)create policy: "STS"
+-----------------------------------------------
+
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "Statement1",
+			"Effect": "Allow",
+			"Action": "sts:AssumeRole",
+			"Resource": "*"
+		}
+	]
+}
+#================================
+#CREATE TRUST RELATIONSHIP
+#================================
+b){
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "ec2.amazonaws.com",
+                "AWS": "arn:aws:iam::517714604478:role/vault-aws-role"
+            },
+            "Action": "sts:AssumeRole"
+        }
+    ]
+}
+
+#=================================================================
+#Use this command in your Vault Server to Confirm the attcahed Role
+#================================================================
+
+i)create Token: in your vault server
+
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600
+
+ii)use the token directly with api:
+
+curl -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/iam/security-credentials/
+
+output: should throw out the iam role name
+
+
+#=========================================
+#Enable Aws Engine in Vault Server
+#=========================================
+Run Command:
+i)vault secrets enable -path=aws aws
+
+
+ii)connect vault to aws(no access keys):
+----------------------------------------------------------------
+vault write aws/config/root\
+region=us-east-1\
+ts_role=:aws:iam::517714604478:role/vault-aws-role
+[Vault,when someone asks for AWS access ,go and assume this role]
+-----------------------------------------------------------------
+iii)Create Role inside Vault:
+------------------------------------------------------------------
+vault write aws/roles/terraform-role \
+  credential_type=assumed_role \
+  role_arns=arn:aws:iam::517714604478:role/vault-aws-role \
+  default_sts_ttl=1h \
+  max_sts_ttl=24h
+-----------------------------------------------------
+[When someone asks for this role,generate Aws Keys"]
+-----------------------------------------------------
+iv) Test (Very Important):
+vault  read aws/creds/terraform-role
+
+you should see
+access_key
+secret_key
+security_token
+
+v)Tell Vault to Trust Github:
+ vault auth enable jwt
+
+#=================================================
+#OIDC IMPLEMENTATION BETWEEN VAULT & GITHUB
+#=================================================
+url:https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-hashicorp-vault
+Command:
+[shell:]
+i)vault auth enable jwt
+[shell:]
+vault write auth/jwt/config \
+     bound_issuer="https://token.actions.githubusercontent.com" \
+     oidc_discovery_url="https://token.actions.githubusercontent.com"
+
+[shell]
+ii)vault policy write myproject-production - <<EOF
+# Read-only permission on 'secret/data/production/*' path
+
+path "secret/data/production/*" {
+  capabilities = [ "read" ]
+}
+EOF
+  
+iii)Configure a policy that only grants access to the specific paths your workflows will use to retrieve secrets. For more advanced policies, see the HashiCorp Vault Policies documentation.
+
+Shell:
+vault policy write myproject-production - <<EOF
+# Read-only permission on 'secret/data/production/*' path
+
+path "secret/data/production/*" {
+  capabilities = [ "read" ]
+}
+EOF
+
+
+
+Configure roles to group different policies together. If the authentication is successful, these policies are attached to the resulting Vault access token.
+
+Shell:
+
+iv)
+ Configure roles to group different policies together. If the authentication is successful, these policies are attached to the resulting Vault access token.
+
+Shell:
+vault write auth/jwt/role/myproject-production -<<EOF
+{
+  "role_type": "jwt",
+  "user_claim": "actor",
+  "bound_claims": {
+    "repository": "user-or-org-name/repo-name"
+  },
+  "policies": ["myproject-production"],
+  "ttl": "10m"
+}
+EOF
+
+
