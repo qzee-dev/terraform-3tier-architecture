@@ -1,5 +1,5 @@
 # 1️⃣ Launch Template (new version with baked AMI)
-resource "aws_launch_template" "web" {
+resource "aws_launch_template" "web_lt" {
   count         = var.enable_ami_rollout ? 1 : 0
   name_prefix   = "web-ami-"
   image_id      = var.new_ami_id
@@ -18,7 +18,7 @@ resource "aws_launch_template" "web" {
 }
 
 # 2️⃣ Use existing Auto Scaling Group
-resource "aws_autoscaling_group" "existing_asg" {
+resource "aws_autoscaling_group" "web_asg" {
   count            = var.enable_ami_rollout ? 1 : 0
   name             = var.existing_asg_name
   min_size         = 2
@@ -44,6 +44,7 @@ resource "aws_autoscaling_group" "existing_asg" {
   }
 }
 
+/*
 # 3️⃣ Optional: Temporary scale-up before rollout
 resource "aws_autoscaling_policy" "scale_up" {
   count                  = var.enable_ami_rollout ? 1 : 0
@@ -60,6 +61,8 @@ resource "aws_autoscaling_policy" "scale_down" {
   autoscaling_group_name = var.existing_asg_name
   scaling_adjustment     = -1 # remove buffer instance
   adjustment_type        = "ChangeInCapacity"
+
+
   cooldown               = 300
 }
-
+*/
