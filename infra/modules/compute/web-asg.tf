@@ -17,8 +17,8 @@ resource "aws_autoscaling_group" "web_asg" {
   target_group_arns = [var.app_tg_arn]
 
   health_check_type         = "ELB"
-  health_check_grace_period = 30
-  force_delete              = true
+  health_check_grace_period = 120
+  force_delete              = false
 
   tag {
     key                 = "Name"
