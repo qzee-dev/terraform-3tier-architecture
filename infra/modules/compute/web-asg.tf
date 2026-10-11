@@ -32,7 +32,7 @@ resource "aws_autoscaling_group" "web_asg" {
 resource "aws_autoscaling_policy" "cpu_target_tracking" {
   count                  = var.enable_ami_rollout ? 0 : 1
   name                   = "cpu-70-target-tracking"
-  autoscaling_group_name = aws_autoscaling_group.web_asg[0].name
+  autoscaling_group_name = aws_autoscaling_group.web_asg.name
   policy_type            = "TargetTrackingScaling"
 
   target_tracking_configuration {
@@ -49,7 +49,7 @@ resource "aws_autoscaling_policy" "cpu_target_tracking" {
 resource "aws_autoscaling_policy" "memory_scale_out" {
   count                  = var.enable_ami_rollout ? 0 : 1
   name                   = "memory-scale-out"
-  autoscaling_group_name = aws_autoscaling_group.web_asg[0].name
+  autoscaling_group_name = aws_autoscaling_group.web_asg.name
   policy_type            = "StepScaling"
   adjustment_type        = "ChangeInCapacity"
   cooldown               = 300
