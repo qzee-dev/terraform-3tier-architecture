@@ -48,5 +48,13 @@ resource "aws_launch_template" "web_lt" {
     tags = {
       Name = "webserver-asg"
     }
+ 
   }
+
+ lifecycle {
+    create_before_destroy = true
+  }
+
 }
+
+
