@@ -21,8 +21,8 @@ resource "aws_launch_template" "web" {
 resource "aws_autoscaling_group" "existing_asg" {
   count            = var.enable_ami_rollout ? 1 : 0
   name             = var.existing_asg_name
-  min_size         = 1
-  max_size         = 3
+  min_size         = 2
+  max_size         = 4
   desired_capacity = 2
 
   # Use latest launch template version
