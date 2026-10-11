@@ -1,9 +1,10 @@
+
 resource "aws_autoscaling_group" "web_asg" {
-  count            = var.enable_ami_rollout ? 0 : 1
-  name             = "web-asg"
-  min_size         = 2
-  max_size         = 4
-  desired_capacity = 2
+  name                = "web-asg"
+  min_size            = 2
+  max_size            = 4
+  desired_capacity    = 2
+
   vpc_zone_identifier = [
     var.subnet1_id,
     var.subnet2_id
@@ -11,7 +12,7 @@ resource "aws_autoscaling_group" "web_asg" {
 
   launch_template {
     id      = aws_launch_template.web_lt.id
-    version = "$Latest"
+    version = aws_launch_template.web_lt.latest_version
   }
 
   target_group_arns = [var.app_tg_arn]
@@ -24,6 +25,22 @@ resource "aws_autoscaling_group" "web_asg" {
     key                 = "Name"
     value               = "webserver-asg"
     propagate_at_launch = true
+  }
+
+  instance_refresh {
+    strategy = "Rolling"
+
+    preferences {
+      min_healthy_percentage = 100
+      max_healthy_percentage = 200
+      instance_warmup        = 120
+      skip_matching          = true
+      auto_rollback          = true
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [desired_capacity]
   }
 }
 ##########################################################################
