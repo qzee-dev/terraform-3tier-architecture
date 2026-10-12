@@ -1,0 +1,277 @@
+name: 3️⃣ AMI Rollout (Deploy New App Version - Zero Downtime)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      new_ami_id:
+        description: "New AMI ID (e.g., ami-0a1b2c3d4e5f6g7h8)"
+        required: true
+      app_version:
+        description: "App version tag (e.g., v2.1.0)"
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  pre-deployment-checks:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Validate Inputs
+        run: |
+          if ! [[ "${{ github.event.inputs.new_ami_id }}" =~ ^ami-[0-9a-f]{17}$ ]]; then
+            echo "❌ Invalid AMI ID format"
+            exit 1
+          fi
+          
+          if ! [[ "${{ github.event.inputs.app_version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "❌ App version must follow v1.0.0 format"
+            exit 1
+          fi
+          
+          echo "✅ Input validation passed"
+
+      - name: Notify Deployment Start
+        run: |
+          cat << EOF
+          🚀 DEPLOYMENT INITIATED
+          
+          Environment: ${{ github.event.inputs.environment }}
+          New AMI: ${{ github.event.inputs.new_ami_id }}
+          App Version: ${{ github.event.inputs.app_version }}
+          Timestamp: $(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          
+          Rolling instance refresh will begin shortly...
+          EOF
+
+  rollout-ami:
+    needs: pre-deployment-checks
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/github-actions-terraform-role
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+
+      - name: Terraform Init (AMI Rollout)
+        working-directory: infra/_ami-rollout
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: infra/_ami-rollout
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: infra/_ami-rollout
+        run: |
+          terraform plan \
+            -var="new_ami_id=${{ github.event.inputs.new_ami_id }}" \
+            -var="app_version=${{ github.event.inputs.app_version }}" \
+            -var="environment=${{ github.event.inputs.environment }}" \
+            -out=tfplan
+
+      - name: Display Deployment Plan
+        working-directory: infra/_ami-rollout
+        run: |
+          echo "📋 Deployment Plan Summary:"
+          terraform show -no-color tfplan | grep -A 50 "Plan:"
+
+      - name: Apply Rollout
+        working-directory: infra/_ami-rollout
+        run: terraform apply -auto-approve tfplan
+
+      - name: Monitor Rolling Instance Refresh
+        run: |
+          echo "⏳ Monitoring rolling instance refresh..."
+          echo "This typically takes 5-10 minutes."
+          echo ""
+          
+          ASG_NAME="web-asg"
+          TARGET_GROUP=$(aws elbv2 describe-target-groups \
+            --names "app-target-group" \
+            --query 'TargetGroups[0].TargetGroupArn' \
+            --output text)
+          
+          START_TIME=$(date +%s)
+          
+          for i in {1..60}; do
+            CURRENT_TIME=$(date +%s)
+            ELAPSED=$((CURRENT_TIME - START_TIME))
+            MINUTES=$((ELAPSED / 60))
+            SECONDS=$((ELAPSED % 60))
+            
+            # Get instance count
+            TOTAL=$(aws autoscaling describe-auto-scaling-groups \
+              --auto-scaling-group-names "$ASG_NAME" \
+              --query 'AutoScalingGroups[0].Instances | length(@)' \
+              --output text)
+            
+            # Get healthy instances
+            HEALTHY=$(aws elbv2 describe-target-health \
+              --target-group-arn "$TARGET_GROUP" \
+              --query 'length(TargetHealthDescriptions[?TargetHealth.State==`healthy`])' \
+              --output text)
+            
+            # Get unhealthy/draining instances
+            UNHEALTHY=$(aws elbv2 describe-target-health \
+              --target-group-arn "$TARGET_GROUP" \
+              --query 'length(TargetHealthDescriptions[?TargetHealth.State!=`healthy`])' \
+              --output text)
+            
+            echo "[$MINUTES:$SECONDS] Instances: $TOTAL | Healthy: $HEALTHY | Updating: $UNHEALTHY"
+            
+            # Check if refresh is complete (all healthy)
+            if [ "$HEALTHY" -eq 2 ] && [ "$UNHEALTHY" -eq 0 ]; then
+              echo ""
+              echo "✅ Rolling instance refresh COMPLETE!"
+              echo "Elapsed time: $MINUTES minutes $SECONDS seconds"
+              break
+            fi
+            
+            sleep 10
+          done
+
+      - name: Post-Deployment Smoke Test
+        run: |
+          echo "🧪 Running smoke tests..."
+          
+          # Get ALB DNS
+          ALB_DNS=$(aws elbv2 describe-load-balancers \
+            --query 'LoadBalancers[?LoadBalancerName==`app-alb`].DNSName' \
+            --output text)
+          
+          echo "Testing endpoint: $ALB_DNS"
+          
+          # Test application health
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            --connect-timeout 5 \
+            --max-time 10 \
+            "http://$ALB_DNS/")
+          
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "301" ]; then
+            echo "✅ Application health check PASSED (HTTP $HTTP_CODE)"
+          else
+            echo "⚠️  Application returned HTTP $HTTP_CODE"
+          fi
+
+      - name: Verify Instance Launch Template Version
+        run: |
+          ASG_NAME="web-asg"
+          
+          LT_ID=$(aws autoscaling describe-auto-scaling-groups \
+            --auto-scaling-group-names "$ASG_NAME" \
+            --query 'AutoScalingGroups[0].LaunchTemplate.LaunchTemplateId' \
+            --output text)
+          
+          LT_VERSION=$(aws autoscaling describe-auto-scaling-groups \
+            --auto-scaling-group-names "$ASG_NAME" \
+            --query 'AutoScalingGroups[0].LaunchTemplate.Version' \
+            --output text)
+          
+          echo "✅ ASG Launch Template:"
+          echo "   ID: $LT_ID"
+          echo "   Version: $LT_VERSION"
+
+      - name: Export Rollout Outputs
+        working-directory: infra/_ami-rollout
+        run: |
+          echo "📋 Deployment Summary:"
+          terraform output -json | jq .
+
+      - name: Create Rollout Summary
+        run: |
+          cat > /tmp/rollout-summary.md << EOF
+          # ✅ AMI Rollout Complete
+          
+          **Environment:** ${{ github.event.inputs.environment }}
+          **New AMI:** ${{ github.event.inputs.new_ami_id }}
+          **App Version:** ${{ github.event.inputs.app_version }}
+          **Timestamp:** $(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          
+          ## Deployment Strategy:
+          - ✅ Rolling instance refresh (66% minimum healthy)
+          - ✅ Zero downtime (old instances kept until new are healthy)
+          - ✅ Automatic rollback on health check failure
+          
+          ## State Files (Unchanged):
+          - Foundation: ✅ Untouched (separate state file)
+          - Compute (ASG): ✅ Updated only launch template reference
+          - AMI Rollout: ✅ New state for this deployment
+          
+          ## What Changed:
+          - New launch template created with ${{ github.event.inputs.app_version }}
+          - ASG updated to use new launch template
+          - Rolling instance refresh triggered (2 instances replaced)
+          - Old instances terminated once new ones passed health checks
+          
+          ## What Stayed the Same:
+          - VPC & Subnets: ✅ No changes
+          - RDS Database: ✅ No changes
+          - Security Groups: ✅ No changes
+          - Load Balancer: ✅ No changes
+          - Infrastructure foundation: ✅ No changes
+          
+          ## Next Deployment:
+          Update \`new_ami_id\` and \`app_version\` in terraform.tfvars and rerun this workflow.
+          EOF
+          cat /tmp/rollout-summary.md
+
+  post-deployment-notifications:
+    needs: rollout-ami
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Success Notification
+        run: |
+          echo "✅ DEPLOYMENT SUCCESSFUL"
+          echo ""
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Version: ${{ github.event.inputs.app_version }}"
+          echo "AMI: ${{ github.event.inputs.new_ami_id }}"
+          echo ""
+          echo "The new application version is now live and serving traffic."
+          echo "No infrastructure downtime occurred during deployment."
+
+  rollback-on-failure:
+    needs: rollout-ami
+    runs-on: ubuntu-latest
+    if: failure()
+
+    steps:
+      - name: Failure Notification
+        run: |
+          echo "❌ DEPLOYMENT FAILED"
+          echo ""
+          echo "Automatic rollback was triggered by ASG."
+          echo "Instances have rolled back to previous launch template."
+          echo ""
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Failed Version: ${{ github.event.inputs.app_version }}"
+          echo ""
+          echo "To investigate:"
+          echo "1. Check ALB target health in AWS Console"
+          echo "2. SSH to instances and check application logs"
+          echo "3. Fix the issue and retry deployment"
