@@ -1,6 +1,3 @@
-# infra/modules/compute/ami_rollout_auto_scal_up.tf
-# ================================================
-
 # 1️⃣ Create NEW launch template for rollout
 resource "aws_launch_template" "web_lt_rollout" {
   count       = var.enable_ami_rollout ? 1 : 0
