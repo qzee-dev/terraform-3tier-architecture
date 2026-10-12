@@ -46,3 +46,38 @@ variable "enable_ami_rollout" {
   type        = bool
   default     = false
 }
+
+
+variable "enable_ami_rollout" {
+  description = "Enable AMI rollout mode with instance refresh"
+  type        = bool
+  default     = false
+}
+
+variable "new_ami_id" {
+  description = "New AMI ID to deploy during rollout"
+  type        = string
+  default     = null  # Must be explicitly set during rollout
+  
+  validation {
+    condition     = var.new_ami_id == null || can(regex("^ami-", var.new_ami_id))
+    error_message = "new_ami_id must be a valid AMI ID (ami-xxxxxxxx) or null."
+  }
+}
+
+variable "rollout_min_healthy_percentage" {
+  description = "Minimum healthy percentage during rollout (0-100)"
+  type        = number
+  default     = 66
+  
+  validation {
+    condition     = var.rollout_min_healthy_percentage >= 0 && var.rollout_min_healthy_percentage <= 100
+    error_message = "Must be between 0 and 100."
+  }
+}
+
+variable "rollout_instance_warmup" {
+  description = "Instance warmup time in seconds (time before instance counts as healthy)"
+  type        = number
+  default     = 120
+}
