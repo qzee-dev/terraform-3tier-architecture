@@ -1,4 +1,3 @@
-
 resource "aws_autoscaling_group" "web_asg" {
   name                = "web-asg"
   min_size            = 2
@@ -12,11 +11,10 @@ resource "aws_autoscaling_group" "web_asg" {
 
   launch_template {
     id      = aws_launch_template.web_lt.id
-    version = aws_launch_template.web_lt.latest_version
+    version = "$Latest"  # ← KEY CHANGE: Use $Latest so new versions auto-apply
   }
 
   target_group_arns = [var.app_tg_arn]
-
   health_check_type         = "ELB"
   health_check_grace_period = 120
   force_delete              = false
@@ -27,20 +25,24 @@ resource "aws_autoscaling_group" "web_asg" {
     propagate_at_launch = true
   }
 
+  # ✅ THIS HANDLES AMI ROLLOUT SAFELY
+
   instance_refresh {
     strategy = "Rolling"
-
+    
     preferences {
-      min_healthy_percentage = 100
-      max_healthy_percentage = 200
-      instance_warmup        = 120
-      skip_matching          = true
-      auto_rollback          = true
+      min_healthy_percentage = 66      # Keep 66% healthy = 2 instances stay up
+      max_healthy_percentage = 150     # Allow 1 extra temp instance during swap
+      instance_warmup        = 120     # Wait 2 min for health checks
+      skip_matching          = false   # Force update even if template config matches
+      auto_rollback          = true    # Automatic rollback if refresh fails
     }
+    
+    triggers = ["launch_template"]  # Refresh when LT changes
   }
 
   lifecycle {
-    ignore_changes = [desired_capacity]
+    ignore_changes = [desired_capacity]  # Don't drift if manually scaled
   }
 }
 ##########################################################################
