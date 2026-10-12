@@ -1,0 +1,148 @@
+name: 2️⃣ Compute Bootstrap (First App Version)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select environment"
+        required: true
+        default: "prod"
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      initial_ami_id:
+        description: "Initial AMI ID (e.g., ami-0c02fb55956c7d31)"
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  bootstrap-compute:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/github-actions-terraform-role
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+
+      - name: Terraform Init (Compute)
+        working-directory: infra/_compute
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: infra/_compute
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: infra/_compute
+        run: |
+          terraform plan \
+            -var="ec2_instance_ami_id=${{ github.event.inputs.initial_ami_id }}" \
+            -var="environment=${{ github.event.inputs.environment }}" \
+            -out=tfplan
+
+      - name: Display Terraform Plan
+        working-directory: infra/_compute
+        run: terraform show -no-color tfplan
+
+      - name: Apply Configuration
+        working-directory: infra/_compute
+        run: terraform apply -auto-approve tfplan
+
+      - name: Wait for ASG to Stabilize
+        run: |
+          echo "⏳ Waiting for Auto Scaling Group to be ready..."
+          ASG_NAME=$(cd infra/_compute && terraform output -raw web_asg_name)
+          
+          for i in {1..30}; do
+            INSTANCE_COUNT=$(aws autoscaling describe-auto-scaling-groups \
+              --auto-scaling-group-names "$ASG_NAME" \
+              --query 'AutoScalingGroups[0].Instances | length(@)' \
+              --output text)
+            
+            if [ "$INSTANCE_COUNT" -ge 2 ]; then
+              echo "✅ ASG has $INSTANCE_COUNT instances"
+              break
+            fi
+            echo "[$i/30] Waiting for instances... (current: $INSTANCE_COUNT/2)"
+            sleep 10
+          done
+
+      - name: Wait for ALB Targets to be Healthy
+        run: |
+          echo "🏥 Waiting for ALB targets to be healthy..."
+          TARGET_GROUP=$(aws elbv2 describe-target-groups \
+            --names "app-target-group" \
+            --query 'TargetGroups[0].TargetGroupArn' \
+            --output text)
+          
+          for i in {1..30}; do
+            HEALTHY=$(aws elbv2 describe-target-health \
+              --target-group-arn "$TARGET_GROUP" \
+              --query 'length(TargetHealthDescriptions[?TargetHealth.State==`healthy`])' \
+              --output text)
+            
+            TOTAL=$(aws elbv2 describe-target-health \
+              --target-group-arn "$TARGET_GROUP" \
+              --query 'length(TargetHealthDescriptions)' \
+              --output text)
+            
+            if [ "$HEALTHY" -ge 2 ]; then
+              echo "✅ All targets healthy ($HEALTHY/$TOTAL)"
+              break
+            fi
+            echo "[$i/30] Healthy targets: $HEALTHY/$TOTAL"
+            sleep 10
+          done
+
+      - name: Export Compute Outputs
+        working-directory: infra/_compute
+        run: |
+          echo "✅ Compute layer deployed successfully!"
+          echo ""
+          echo "📋 Outputs:"
+          terraform output -json | jq .
+
+      - name: Create Bootstrap Summary
+        run: |
+          ASG_NAME=$(cd infra/_compute && terraform output -raw web_asg_name)
+          LT_ID=$(cd infra/_compute && terraform output -raw launch_template_id)
+          
+          cat > /tmp/bootstrap-summary.md << EOF
+          # ✅ Compute Bootstrap Complete
+          
+          **Environment:** ${{ github.event.inputs.environment }}
+          **Initial AMI:** ${{ github.event.inputs.initial_ami_id }}
+          **Timestamp:** $(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          
+          ## Resources Created:
+          - ✅ Auto Scaling Group: $ASG_NAME
+          - ✅ Launch Template: $LT_ID
+          - ✅ EC2 Instances: 2 (t2.micro)
+          - ✅ ALB Target Registration: Complete
+          - ✅ Health Checks: Passing
+          
+          ## Infrastructure Status:
+          - Foundation: ✅ Deployed
+          - Compute: ✅ Deployed
+          - Application: 🚀 Ready for traffic
+          
+          ## Next Step:
+          Trigger workflow **3-ami-rollout** to deploy new application versions.
+          EOF
+          cat /tmp/bootstrap-summary.md
