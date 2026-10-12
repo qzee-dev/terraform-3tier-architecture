@@ -1,1 +1,11 @@
-
+aws_region             = "us-east-1"
+vpc_cidr_block         = "10.0.0.0/16"
+public_subnet_1a_cidr  = "10.0.1.0/24"
+public_subnet_1b_cidr  = "10.0.2.0/24"
+private_subnet_1a_cidr = "10.0.3.0/24"
+private_subnet_1b_cidr = "10.0.4.0/24"
+environment            = "prod"
+project_name           = "qzee-demo"
+alb_certificate_arn    = "arn:aws:acm:us-east-1:123456789012:certificate/REPLACE-WITH-YOUR-CERT"
+# For production: fetch db_password from AWS Secrets Manager or HashiCorp Vault
+db_password            = "REPLACE_WITH_STRONG_PASSWORD"
