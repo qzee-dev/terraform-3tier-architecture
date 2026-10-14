@@ -38,6 +38,12 @@ resource "aws_autoscaling_group" "web_asg" {
       auto_rollback          = true    # Automatic rollback if refresh fails
     }
 
+   alarm_specification {
+        alarms = [
+          aws_cloudwatch_metric_alarm.app_high_5xx.alarm_name,
+          aws_cloudwatch_metric_alarm.app_high_latency.alarm_name
+        ]
+      
 
     
     triggers = ["launch_template"]  # Refresh when LT changes
