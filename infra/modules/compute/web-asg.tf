@@ -31,12 +31,14 @@ resource "aws_autoscaling_group" "web_asg" {
     strategy = "Rolling"
     
     preferences {
-      min_healthy_percentage = 66      # Keep 66% healthy = 2 instances stay up
+      min_healthy_percentage = 100     # Keep 100% healthy = 2 instances stay up
       max_healthy_percentage = 150     # Allow 1 extra temp instance during swap
-      instance_warmup        = 120     # Wait 2 min for health checks
+      instance_warmup        = 180     # Wait 3 min for health checks
       skip_matching          = false   # Force update even if template config matches
       auto_rollback          = true    # Automatic rollback if refresh fails
     }
+
+
     
     triggers = ["launch_template"]  # Refresh when LT changes
   }
